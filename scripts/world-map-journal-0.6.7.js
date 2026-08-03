@@ -499,14 +499,15 @@ async function openDossierImporter() {
   const { DialogV2 } = foundry.applications.api;
   let selectedFile = null;
   const content = document.createElement("div");
-  content.className = "lcj-dossier-import";
-  content.innerHTML = `<label class="lcj-dossier-drop" data-lcj-dossier-drop tabindex="0">
-    <input type="file" name="dossierFile" accept=".json,application/json" data-lcj-dossier-file>
-    <span class="lcj-dossier-drop-icon"><i class="fa-solid fa-file-arrow-up"></i></span>
-    <strong>Drop a dossier .json file here</strong>
-    <span>or click to choose a file</span>
-    <small data-lcj-dossier-filename aria-live="polite">No file selected</small>
-  </label>`;
+  content.innerHTML = `<div class="lcj-dossier-import">
+    <label class="lcj-dossier-drop" data-lcj-dossier-drop tabindex="0">
+      <input type="file" name="dossierFile" accept=".json,application/json" data-lcj-dossier-file>
+      <span class="lcj-dossier-drop-icon"><i class="fa-solid fa-file-arrow-up"></i></span>
+      <strong>Drop a dossier .json file here</strong>
+      <span>or click to choose a file</span>
+      <small data-lcj-dossier-filename aria-live="polite">No file selected</small>
+    </label>
+  </div>`;
   const dossierFile = await DialogV2.input({
     window: { title: "Import Private Dossier" },
     content,

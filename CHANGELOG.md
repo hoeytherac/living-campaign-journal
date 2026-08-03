@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.7
+
+- Fixed Foundry's `config.content element must have no attributes` error by keeping the DialogV2 outer content element completely plain.
+- Moved all dossier importer styling to an inner wrapper and added validation to prevent the invalid structure from returning.
+
 ## 0.6.6
 
 - Fixed the GitHub release validator so it checks the versioned module script declared by `module.json` instead of the retired stable filename.

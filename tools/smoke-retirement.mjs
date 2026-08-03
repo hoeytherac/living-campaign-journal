@@ -133,7 +133,7 @@ globalThis.JournalEntry = {
   }
 };
 
-await import("../scripts/world-map-journal-0.6.6.js");
+await import("../scripts/world-map-journal-0.6.7.js");
 await onceHooks.get("init")();
 await onceHooks.get("ready")();
 

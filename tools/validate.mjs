@@ -68,6 +68,8 @@ for (const marker of ["data-lcj-dossier-drop", "data-lcj-dossier-file", 'accept=
   if (!moduleScript.includes(marker)) throw new Error(`The private dossier file importer is missing ${marker}.`);
 }
 if (moduleScript.includes('textarea name="dossierJson"')) throw new Error("The retired private dossier paste box is still present.");
+if (moduleScript.includes('content.className = "lcj-dossier-import"')) throw new Error("DialogV2 content must use an attribute-free outer div.");
+if (!moduleScript.includes('<div class="lcj-dossier-import">')) throw new Error("The dossier importer needs its styled inner wrapper.");
 
 const stylesheet = await readFile(path.join(root, manifest.styles[0]), "utf8");
 const openingBraces = [...stylesheet.matchAll(/{/g)].length;
