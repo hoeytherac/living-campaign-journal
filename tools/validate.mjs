@@ -48,7 +48,7 @@ for (const match of template.matchAll(blockPattern)) {
 }
 if (blocks.length) throw new Error(`Unclosed Handlebars block: ${blocks.at(-1)}.`);
 
-const stylesheet = await readFile(path.join(root, "styles/living-campaign-journal.css"), "utf8");
+const stylesheet = await readFile(path.join(root, "styles/grand-blooming-journal.css"), "utf8");
 const openingBraces = [...stylesheet.matchAll(/{/g)].length;
 const closingBraces = [...stylesheet.matchAll(/}/g)].length;
 if (openingBraces !== closingBraces) throw new Error("The stylesheet has unbalanced braces.");

@@ -40,7 +40,7 @@ globalThis.game = {
   }
 };
 
-await import("../scripts/living-campaign-journal.js");
+await import("../scripts/grand-blooming-journal.js");
 await onceHooks.get("init")();
 await onceHooks.get("ready")();
 
