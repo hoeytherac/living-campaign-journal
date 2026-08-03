@@ -169,6 +169,9 @@ function validateLibrary(library) {
   if (library.schemaVersion !== 1) throw new Error(`Unsupported schemaVersion: ${library.schemaVersion ?? "missing"}.`);
   if (!library.campaign?.title) throw new Error("campaign.title is required.");
   if (!Array.isArray(library.entries)) throw new Error("entries must be an array.");
+  if (library.retiredEntries !== undefined && !Array.isArray(library.retiredEntries)) {
+    throw new Error("retiredEntries must be an array when provided.");
+  }
 
   const seen = new Set();
   const allowedTypes = new Set(["quest", "lore", "history"]);
@@ -185,6 +188,15 @@ function validateLibrary(library) {
       throw new Error(`Entry "${entry.id}" has invalid quest scope "${entry.quest.scope}".`);
     }
     seen.add(entry.id);
+  }
+  const retired = new Set();
+  for (const entryId of library.retiredEntries ?? []) {
+    if (typeof entryId !== "string" || !/^[a-z0-9][a-z0-9-]*$/.test(entryId)) {
+      throw new Error(`Retired entry id "${entryId}" must use lowercase letters, numbers, and hyphens.`);
+    }
+    if (retired.has(entryId)) throw new Error(`Duplicate retired entry id: ${entryId}.`);
+    if (seen.has(entryId)) throw new Error(`Entry "${entryId}" cannot be both active and retired.`);
+    retired.add(entryId);
   }
   return library;
 }
@@ -524,14 +536,22 @@ function managedEntries() {
 async function syncLibrary({ force = false, quiet = false } = {}) {
   if (!game.user?.isGM) {
     warn("Only a GM can synchronize campaign content.");
-    return { created: 0, updated: 0, skipped: 0 };
+    return { created: 0, updated: 0, skipped: 0, deleted: 0 };
   }
 
   try {
     const library = await loadLibrary();
     const folders = await ensureFolders();
     const existingById = new Map(managedEntries().map((entry) => [flag(entry, "sourceId"), entry]));
-    const results = { created: 0, updated: 0, skipped: 0 };
+    const results = { created: 0, updated: 0, skipped: 0, deleted: 0 };
+
+    for (const sourceId of library.retiredEntries ?? []) {
+      const retiredEntry = existingById.get(sourceId);
+      if (!retiredEntry || flag(retiredEntry, "managed") !== true) continue;
+      await retiredEntry.delete();
+      existingById.delete(sourceId);
+      results.deleted += 1;
+    }
 
     for (const source of library.entries) {
       const existing = existingById.get(source.id);
@@ -589,7 +609,7 @@ async function syncLibrary({ force = false, quiet = false } = {}) {
     await game.settings.set(MODULE_ID, "campaignMeta", campaignMeta);
     await game.settings.set(MODULE_ID, "lastSync", new Date().toISOString());
 
-    if (!quiet) info(`Sync complete — ${results.created} created, ${results.updated} updated, ${results.skipped} unchanged.`);
+    if (!quiet) info(`Sync complete — ${results.created} created, ${results.updated} updated, ${results.skipped} unchanged, ${results.deleted} retired.`);
     journalApp?.render();
     return results;
   } catch (exception) {

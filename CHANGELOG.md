@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.1
+
+- Replaced the four demonstration quests with the campaign's opening chapter at Feyrandralis and the Cradle of Blooming Light.
+- Added a full seven-day **Days of the First Steps** festival with one tracked objective for each festival day.
+- Added five player-selectable quest lines leading toward Kaelport, Luthar's Gate, or deeper into Feyrandralis.
+- Added explicit retirement support for obsolete module-managed records so the old demonstration quests are removed on the next GM sync without touching unrelated Journals.
+- Kept player dossiers and character secrets outside the public campaign library.
+
 ## 0.6.0
 
 - Added the full-resolution Kaeltharion world map as a dedicated **World Map** journal tab.

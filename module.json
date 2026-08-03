@@ -2,7 +2,7 @@
   "id": "living-campaign-journal",
   "title": "Living Campaign Journal",
   "description": "A system-agnostic quest ledger, interactive world map, lore archive, campaign history, and private player dossier system for Foundry VTT.",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "authors": [
     {
       "name": "Campaign GM"
@@ -10,7 +10,7 @@
   ],
   "url": "https://github.com/hoeytherac/living-campaign-journal",
   "manifest": "https://raw.githubusercontent.com/hoeytherac/living-campaign-journal/main/module.json",
-  "download": "https://github.com/hoeytherac/living-campaign-journal/releases/download/v0.6.0/living-campaign-journal-v0.6.0.zip",
+  "download": "https://github.com/hoeytherac/living-campaign-journal/releases/download/v0.6.1/living-campaign-journal-v0.6.1.zip",
   "readme": "https://github.com/hoeytherac/living-campaign-journal/blob/main/README.md",
   "changelog": "https://github.com/hoeytherac/living-campaign-journal/blob/main/CHANGELOG.md",
   "bugs": "https://github.com/hoeytherac/living-campaign-journal/issues",

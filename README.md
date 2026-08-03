@@ -36,6 +36,7 @@ The interface uses a clear layered-blue foundation, luminous cornflower interact
 - Preserves quest progress when authored text is updated.
 - Checks the configured JSON source when the world starts and, by default, every five minutes.
 - Detects changed records by content, so incrementing `revision` is useful but not required.
+- Removes only explicitly retired module-managed entries, allowing obsolete sample quests to be cleared without touching a GM's other Journals.
 
 ## Install
 
@@ -125,6 +126,7 @@ Common optional fields are `summary`, `body`, `visibility`, `tags`, and `revisio
 - Changing any source field triggers an update even when `revision` is unchanged.
 - Existing status and objective progress are preserved during content updates.
 - Set `resetProgress` to `true` on a changed quest only when its imported default status and objective state should replace current progress. Remove it again after the reset is imported.
+- Put an obsolete managed record's exact ID in top-level `retiredEntries` when it should be deleted from Foundry on the next sync. This only affects Journals created and managed by this module.
 
 Quest-board fields live inside `quest`:
 
@@ -153,7 +155,7 @@ Hold Shift while clicking **Sync now** to refresh every managed Journal Entry. A
 
 ## Data safety
 
-Synchronization never deletes Journal Entries. It only creates or updates entries marked as managed by this module. Normal Foundry edits to quest progress are retained, but manual edits inside a managed Journal page can be replaced the next time that source record changes.
+Synchronization creates or updates entries marked as managed by this module. It deletes a managed Journal only when its exact source ID is explicitly listed in `retiredEntries`; unrelated and manually created Journals are never touched. Normal Foundry edits to quest progress are retained, but manual edits inside a managed Journal page can be replaced the next time that source record changes.
 
 The source file is trusted GM-authored content. Do not point the module at an untrusted JSON feed because `body` intentionally supports HTML.
 

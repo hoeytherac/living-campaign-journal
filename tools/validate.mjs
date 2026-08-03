@@ -19,6 +19,7 @@ if (manifest.id !== path.basename(root)) throw new Error("module.json id must ma
 if (campaign.schemaVersion !== 1) throw new Error("campaign.json must use schemaVersion 1.");
 if (!campaign.campaign?.title) throw new Error("campaign.title is required.");
 if (!Array.isArray(campaign.entries)) throw new Error("entries must be an array.");
+if (campaign.retiredEntries !== undefined && !Array.isArray(campaign.retiredEntries)) throw new Error("retiredEntries must be an array.");
 if (!Array.isArray(dossierTemplate.dossiers) || !dossierTemplate.dossiers.length) throw new Error("The private dossier template needs a dossiers array.");
 for (const dossier of dossierTemplate.dossiers) {
   if (!dossier.playerUuid || !dossier.characterName || !dossier.backstory?.body) throw new Error("The private dossier template is incomplete.");
@@ -41,6 +42,13 @@ for (const entry of campaign.entries) {
     if (objectiveIds.has(objective.id)) throw new Error(`Duplicate objective ${objective.id} on ${entry.id}.`);
     objectiveIds.add(objective.id);
   }
+}
+const retiredIds = new Set();
+for (const entryId of campaign.retiredEntries ?? []) {
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(entryId ?? "")) throw new Error(`Invalid retired entry id: ${entryId ?? "missing"}.`);
+  if (retiredIds.has(entryId)) throw new Error(`Duplicate retired entry id: ${entryId}.`);
+  if (ids.has(entryId)) throw new Error(`Entry ${entryId} cannot be active and retired.`);
+  retiredIds.add(entryId);
 }
 
 const template = await readFile(path.join(root, "templates/dashboard.hbs"), "utf8");

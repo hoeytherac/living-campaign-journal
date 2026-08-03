@@ -11,104 +11,164 @@
     { "id": "completed", "label": "Completed" },
     { "id": "failed", "label": "Failed" }
   ],
+  "retiredEntries": [
+    "quest-bells-beneath-brackenford",
+    "quest-cartographers-last-route",
+    "quest-crown-fragment",
+    "quest-promise-under-starlight"
+  ],
   "entries": [
     {
-      "id": "quest-bells-beneath-brackenford",
+      "id": "quest-days-of-the-first-steps",
       "type": "quest",
-      "title": "The Bells Beneath Brackenford",
-      "summary": "A bell rings under the flooded chapel each night, and someone in the village answers.",
-      "body": "<p>Three nights ago, the old chapel bell began sounding from somewhere below the waterline. Each time it rings, a different villager leaves home and walks toward the marsh.</p><p>Warden Elian believes the submerged crypt can be reached through a collapsed ossuary behind the chapel.</p>",
+      "title": "The Days of the First Steps",
+      "summary": "Seven days of ceremony, wonder, and uneasy promises at the Cradle of Blooming Light will begin the Blue Butterfly Cycle.",
+      "body": "<p>Feyrandralis has opened the Cradle of Blooming Light for a full week of lantern processions, garden salons, public trials of skill, midnight music, and the naming of a new Pilgrimage. Beneath the silk and flowers, Keepers are already arguing over why this cycle called adults instead of children—and why no council can explain the blue butterflies.</p><p>For seven days, the pilgrims may meet the city, learn one another's stories, make allies, collect rumors, and decide what kind of company they will become. On the final morning, they will take their ceremonial first steps together and choose which invitation becomes their first road.</p><h3>The Festival Week</h3><ol><li><strong>Day One — Arrival:</strong> enter the Cradle and be recognized before the gathered city.</li><li><strong>Day Two — Names:</strong> register a name, a keepsake, and the road each pilgrim has left behind.</li><li><strong>Day Three — Voices:</strong> meet the newspapers, noble houses, Keepers, and petitioners competing to define the new cycle.</li><li><strong>Day Four — Hands:</strong> join the festival's contests and offer one act of service to Feyrandralis.</li><li><strong>Day Five — Shadows:</strong> face the first accusation of witchcraft before celebration turns to panic.</li><li><strong>Day Six — Promises:</strong> answer the invitations that will shape the Pilgrimage.</li><li><strong>Day Seven — First Steps:</strong> cross the living threshold and choose the party's road.</li></ol>",
       "visibility": "players",
       "revision": 1,
-      "tags": ["Brackenford", "mystery", "marsh"],
+      "tags": ["Feyrandralis", "Cradle of Blooming Light", "festival", "opening chapter"],
       "quest": {
         "status": "active",
         "scope": "party",
-        "rank": "C",
+        "rank": "Opening Chapter",
         "new": false,
-        "postedAt": "Session 1",
-        "giver": "Warden Elian Voss",
-        "location": "Brackenford",
-        "rewards": "75 gp and the Warden's sealed favor",
+        "postedAt": "Festival Day One",
+        "giver": "The Keepers of the Cradle",
+        "location": "Feyrandralis — Cradle of Blooming Light",
+        "rewards": "Pilgrims' travel seals, the party's first chosen road, and a place in the living record",
         "objectives": [
-          { "id": "question-witnesses", "text": "Question the villagers who heard the bell" },
-          { "id": "enter-crypt", "text": "Find a safe route into the flooded crypt" },
-          { "id": "silence-bell", "text": "Discover who—or what—is ringing the bell" }
+          { "id": "day-one-arrival", "text": "Day One — Arrive at the Cradle and witness the recognition ceremony" },
+          { "id": "day-two-names", "text": "Day Two — Enter your names, keepsakes, and farewells in the living record" },
+          { "id": "day-three-voices", "text": "Day Three — Hear the factions and petitioners seeking the pilgrims' attention" },
+          { "id": "day-four-hands", "text": "Day Four — Take part in the festival and perform one act of service" },
+          { "id": "day-five-shadows", "text": "Day Five — Resolve the accusation threatening the festival" },
+          { "id": "day-six-promises", "text": "Day Six — Consider the five invitations placed before the party" },
+          { "id": "day-seven-first-steps", "text": "Day Seven — Complete the First Steps procession and choose the first road" }
         ]
       }
     },
     {
-      "id": "quest-cartographers-last-route",
+      "id": "quest-name-kaelport-forgot",
       "type": "quest",
-      "title": "The Cartographer's Last Route",
-      "summary": "Recover a missing surveyor's field book before the royal road is drawn through sacred ground.",
-      "body": "<p>Royal surveyor Mara Quill vanished while charting the western ridge. Her unfinished route crosses land claimed by the Thornwake Circle, and both sides want her field book.</p><p>The party must decide who receives the recovered map—or whether the route should remain lost.</p>",
+      "title": "The Name Kaelport Forgot",
+      "summary": "Eleven letters ask the pilgrims to remember people whom Kaelport's families, ledgers, and servants insist never existed.",
+      "body": "<p>The sixth-night train from Kaelport arrives carrying eleven letters in eleven different envelopes, all written in the same hand: <em>Please remember me.</em> Each bears a legitimate household seal. Each household denies sending it. By morning, one of the petitioners' names has vanished from the passenger list.</p><p>The trail leads from Kaelport's rail terminus into its servant quarters, printing houses, and noble salons, where memory magic is treated as both inheritance and property.</p><h3>The Road Ahead</h3><ol><li><strong>The Vanishing Ink:</strong> preserve the letters before their names disappear.</li><li><strong>The Houses of Many Voices:</strong> learn who profits when a life is edited out of polite memory.</li><li><strong>The Vault Beneath Kaelport:</strong> decide whether stolen memories should be restored, destroyed, or carried onward.</li></ol>",
       "visibility": "players",
       "revision": 1,
-      "tags": ["western ridge", "factions", "exploration"],
+      "tags": ["Kaelport", "memory", "noble houses", "mystery"],
       "quest": {
         "status": "available",
         "scope": "party",
         "rank": "B",
         "new": true,
-        "postedAt": "After Session 2",
-        "giver": "Quartermaster Renn",
-        "location": "The Western Ridge",
-        "rewards": "A royal travel writ and 100 gp",
+        "postedAt": "Festival Day Six",
+        "giver": "Eleven Unremembered Petitioners",
+        "location": "Kaelport",
+        "rewards": "A Kaelport archive writ, rail passage, and one recovered memory",
         "objectives": [
-          { "id": "find-camp", "text": "Locate Mara Quill's last camp" },
-          { "id": "recover-book", "text": "Recover the field book" },
-          { "id": "choose-recipient", "text": "Decide who receives the route" }
+          { "id": "preserve-letters", "text": "Keep the eleven letters from erasing themselves" },
+          { "id": "follow-kaelport-names", "text": "Follow the missing names into Kaelport's estates and archives" },
+          { "id": "judge-memory-vault", "text": "Decide the fate of the memory vault beneath the city" }
         ]
       }
     },
     {
-      "id": "quest-crown-fragment",
+      "id": "quest-morrowglass-promise",
       "type": "quest",
-      "title": "A Fragment of the Crown",
-      "summary": "The shard recovered below Brackenford may be one piece of the Ashen Crown.",
-      "body": "<p>The recovered metal is warm despite the marsh water. Archivist Seln has identified the etched phrase along its rim, but has not told the party what it means.</p><p><strong>GM lead:</strong> Seln serves the Cinder Court and intends to replace the shard with a forgery.</p>",
-      "visibility": "gm",
-      "revision": 1,
-      "tags": ["main plot", "Ashen Crown", "secret"],
-      "quest": {
-        "status": "active",
-        "scope": "party",
-        "rank": "S",
-        "new": false,
-        "postedAt": "Secret",
-        "giver": "Archivist Seln",
-        "location": "The Lantern Archive",
-        "rewards": "Revelation of the crown's first bearer",
-        "objectives": [
-          { "id": "test-shard", "text": "Test the shard's properties" },
-          { "id": "watch-seln", "text": "Determine whether Seln can be trusted" }
-        ]
-      }
-    },
-    {
-      "id": "quest-promise-under-starlight",
-      "type": "quest",
-      "title": "A Promise Under Starlight",
-      "summary": "Lyra's childhood promise points toward a ruined observatory, and she is asking the whole party to come with her.",
-      "body": "<p>Years ago, Lyra promised her missing brother that they would watch the Starfall together from the old hilltop observatory. A blue-glass message bearing his sign has now arrived at the guild.</p><p>This is Lyra's personal quest, but every adventurer who joins may help decide how that promise is fulfilled.</p>",
+      "title": "The Morrowglass Promise",
+      "summary": "A Kaelport medical exhibition promises a perfect new body—but its first restored patient remembers three different lives.",
+      "body": "<p>The Morrowglass Anatomical Society invites the chosen pilgrims to witness the century's great triumph: a body rebuilt through anatomy, alchemy, machinery, and old magic. Hours before the unveiling, the patient wakes and names strangers as beloved family.</p><p>The Society needs discreet escorts, investigators, and witnesses. Its rivals call the work grave robbery. Its patrons call it immortality. The patient only asks which memories make a person real.</p><h3>The Road Ahead</h3><ol><li><strong>The Exhibition:</strong> protect the patient when the demonstration becomes a public scandal.</li><li><strong>The Harbor Laboratories:</strong> trace the bodies, memories, and money used in the procedure.</li><li><strong>The Promise:</strong> choose whether the work should save the dying, be buried, or belong to no single patron.</li></ol>",
       "visibility": "players",
       "revision": 1,
-      "tags": ["personal quest", "observatory", "family"],
+      "tags": ["Kaelport", "medicine", "identity", "occult science"],
       "quest": {
         "status": "available",
-        "scope": "personal",
-        "owner": "Lyra Vale",
-        "rank": "Personal",
+        "scope": "party",
+        "rank": "A",
         "new": true,
-        "postedAt": "After Session 2",
-        "giver": "Lyra Vale",
-        "location": "The Starfall Observatory",
-        "rewards": "Lyra's trust and the truth behind the blue-glass message",
+        "postedAt": "Festival Day Six",
+        "giver": "The Morrowglass Anatomical Society",
+        "location": "Kaelport",
+        "rewards": "Access to restricted medical archives and the Society's restoration apparatus",
         "objectives": [
-          { "id": "decode-message", "text": "Decode the blue-glass message" },
-          { "id": "reach-observatory", "text": "Reach the Starfall Observatory" },
-          { "id": "keep-promise", "text": "Help Lyra decide how to keep her promise" }
+          { "id": "meet-restored-patient", "text": "Reach Kaelport and meet the restored patient" },
+          { "id": "audit-morrowglass-work", "text": "Discover whose bodies and memories made the restoration possible" },
+          { "id": "decide-restoration-fate", "text": "Decide who may control the Morrowglass process" }
+        ]
+      }
+    },
+    {
+      "id": "quest-seventh-file",
+      "type": "quest",
+      "title": "The Seventh File",
+      "summary": "A sealed record from Saint Veyra's Rootward House rewrites a child's name every dawn, and every borrowed name belongs to someone missing.",
+      "body": "<p>A courier from Luthar's Gate arrives without insignia and asks the pilgrims to carry a locked intake file back to Saint Veyra's Rootward House. The document has named six different children in six days. None are in the House. All six are missing somewhere in Kaeltharion.</p><p>Tomorrow will reveal the seventh name. The Root Line wants the file surrendered, the Dusk Line wants it silenced, and frightened families have begun blaming witches and unplaced children.</p><h3>The Road Ahead</h3><ol><li><strong>The Seventh Dawn:</strong> guard the file and learn its next name.</li><li><strong>The Root House:</strong> protect the children while searching records beneath the Grand Tree.</li><li><strong>The Old Root Gate:</strong> discover who is moving lives between worlds—and decide who is allowed to know.</li></ol>",
+      "visibility": "players",
+      "revision": 1,
+      "tags": ["Luthar's Gate", "Rootward House", "unplaced", "missing persons"],
+      "quest": {
+        "status": "available",
+        "scope": "party",
+        "rank": "A",
+        "new": true,
+        "postedAt": "Festival Day Six",
+        "giver": "An unnamed Rootward courier",
+        "location": "Luthar's Gate — Saint Veyra's Rootward House",
+        "rewards": "Root House sanctuary, sealed registry access, and the truth of the seventh name",
+        "objectives": [
+          { "id": "guard-seventh-file", "text": "Keep the changing file safe until the seventh dawn" },
+          { "id": "reach-rootward-house", "text": "Carry it to Saint Veyra's Rootward House" },
+          { "id": "find-missing-names", "text": "Find the people whose names have appeared in the file" }
+        ]
+      }
+    },
+    {
+      "id": "quest-iron-pilgrimage",
+      "type": "quest",
+      "title": "The Iron Pilgrimage",
+      "summary": "The Luthar-side pilgrimage road no longer remembers those who walk it, and a midnight train has arrived missing seven hours.",
+      "body": "<p>The Vigilant Order reports that the old route through Luthar's Gate has stopped accepting new ritual marks. The latest railcar crossed beneath the Grand Tree at sunset and emerged at dawn. Its clocks advanced seven hours. Its passengers did not.</p><p>The Gate Line has sealed the station. The Keepers insist the road must be restitched before the new Pilgrimage can safely leave the divided city. Both institutions want the chosen under their authority.</p><h3>The Road Ahead</h3><ol><li><strong>The Lost Hours:</strong> question passengers and search the sealed midnight train.</li><li><strong>The Iron Gate:</strong> cross courts, patrols, and competing orders to reach the old road.</li><li><strong>The Living Stitch:</strong> renew the protection spell—or learn why the road has begun refusing it.</li></ol>",
+      "visibility": "players",
+      "revision": 1,
+      "tags": ["Luthar's Gate", "railway", "Vigilant Order", "pilgrimage road"],
+      "quest": {
+        "status": "available",
+        "scope": "party",
+        "rank": "B",
+        "new": true,
+        "postedAt": "Festival Day Six",
+        "giver": "The Vigilant Order and the Cradle Keepers",
+        "location": "Luthar's Gate — Rootline Station",
+        "rewards": "A Vigilant road writ, passage on the restored line, and authority to mark the first route",
+        "objectives": [
+          { "id": "investigate-lost-hours", "text": "Investigate the passengers and midnight train that lost seven hours" },
+          { "id": "enter-sealed-road", "text": "Gain access to the sealed pilgrimage road beneath Luthar's Gate" },
+          { "id": "restore-living-stitch", "text": "Restore the living stitch—or discover why it rejected the old rite" }
+        ]
+      }
+    },
+    {
+      "id": "quest-garden-behind-silk",
+      "type": "quest",
+      "title": "The Garden Behind the Silk",
+      "summary": "A plea sewn inside the festival's grand banner asks the pilgrims to find the true name of a child hidden inside Feyrandralis's patronage houses.",
+      "body": "<p>During the First Steps procession, a seam splits in the ceremonial banner. Inside is a child's message worked in blue thread: <em>They gave me a beautiful name. Please find mine.</em></p><p>Feyrandralis has no orphanages. Its lost children disappear more gracefully—into apprenticeships, temple registries, servant contracts, and private patronage. The banner passed through six respected houses, and each denies knowing who stitched the plea.</p><h3>The Road Ahead</h3><ol><li><strong>The Blue Thread:</strong> trace the banner through the festival workshops.</li><li><strong>The Patron Gardens:</strong> enter the beautiful houses where unwanted histories are kept out of sight.</li><li><strong>A Name Freely Chosen:</strong> decide what freedom, family, and protection should mean for the hidden children of Feyrandralis.</li></ol>",
+      "visibility": "players",
+      "revision": 1,
+      "tags": ["Feyrandralis", "patronage", "hidden children", "social mystery"],
+      "quest": {
+        "status": "available",
+        "scope": "party",
+        "rank": "B",
+        "new": true,
+        "postedAt": "Festival Day Six",
+        "giver": "The Child with the Blue Thread",
+        "location": "Feyrandralis",
+        "rewards": "The children's trust, a patron-house favor, and a true name returned",
+        "objectives": [
+          { "id": "trace-blue-thread", "text": "Trace the blue thread through the First Steps workshops" },
+          { "id": "enter-patron-houses", "text": "Learn which patron house hid the child who wrote the plea" },
+          { "id": "protect-chosen-name", "text": "Help the hidden children claim names and futures of their own choosing" }
         ]
       }
     },
