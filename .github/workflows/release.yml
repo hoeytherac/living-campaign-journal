@@ -34,6 +34,7 @@ jobs:
           node tools/validate.mjs
           node tools/smoke-foundry.mjs
           node tools/smoke-dossiers.mjs
+          node tools/smoke-retirement.mjs
 
       - name: Build Foundry module archive
         shell: bash
