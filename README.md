@@ -2,21 +2,23 @@
 
 Living Campaign Journal is a system-agnostic Foundry VTT module for a shared quest ledger, lore library, and campaign history. Its source of truth is one readable JSON file, so campaign updates can be authored with Codex and synchronized into Foundry without recreating Journal Entries by hand.
 
+The current interface is styled for **The Grand Blooming**, a Belle Époque-inspired chapter of **The Blue Butterfly Cycle**, using clear layered blues, restrained antique gold, floral Art Nouveau details, and readable card-based layouts.
+
 This first release targets Foundry VTT 13 and 14.
 
 ## Install from GitHub
 
-Once a public GitHub release is available, paste this manifest URL into Foundry's **Install Module** dialog:
+Paste this direct manifest URL into Foundry's **Install Module** dialog:
 
 ```text
-https://github.com/hoeytherac/living-campaign-journal/releases/latest/download/module.json
+https://raw.githubusercontent.com/hoeytherac/living-campaign-journal/main/module.json
 ```
 
-For a private repository, download the release ZIP while signed in and install it manually in Foundry's `Data/modules/living-campaign-journal` directory. GitHub's unauthenticated manifest URL will not work until the repository is public.
+The direct raw address avoids the additional redirects used by GitHub release assets. Release ZIPs remain available for manual installation.
 
 ## Visual design
 
-The interface uses a near-black and midnight-blue foundation, luminous sapphire interactions, and antique-gold typography and rules. Its header artwork features original blue butterflies flowing around gold filigree. The player quest area is styled as a fantasy-anime guild board framed in ebony, blue leather, magical butterflies, and gold ornament.
+The interface uses a clear layered-blue foundation, luminous cornflower interactions, antique-gold typography, and open card-based layouts. Its original header artwork combines blue butterflies, wisteria, iris, hydrangea, and restrained Art Nouveau linework inspired by Belle Époque botanical programs.
 
 ## What it does
 
@@ -41,15 +43,15 @@ The interface uses a near-black and midnight-blue foundation, luminous sapphire 
 
 The first active GM automatically imports `content/campaign.json`.
 
-## Player quest board
+## Player quest ledger
 
-The **Quest Board** tab is the party's decision space:
+The **Quest Ledger** tab is the party's decision space:
 
-- **New Postings** holds available quests marked with `new: true`.
-- **Choose the Next Adventure** holds the other available party quests.
+- **New Invitations** holds available quests marked with `new: true`.
+- **Open Engagements** holds the other available party quests.
 - A player selects **Choose this quest** to cast their vote. Selecting another regular quest moves that player's vote, so each player has one current destination choice.
-- **Personal Quests** are tied to one hero but remain open to the table. Any player can select **Join this quest** or leave it later.
-- **Current Adventures** and **Completed & Failed** keep the board connected to the campaign's ongoing record.
+- **Personal Promises** are tied to one hero but remain open to the table. Any player can select **Join this quest** or leave it later.
+- **In Progress** and **Closed Chapters** keep the ledger connected to the campaign's ongoing record.
 
 Player choices are sent through Foundry's module socket to the active GM, validated against Journal visibility, written to the quest's progress flags, and then synchronized to all connected players.
 

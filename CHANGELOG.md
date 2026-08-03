@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0
+
+- Reframed the journal as **The Grand Blooming** within **The Blue Butterfly Cycle**.
+- Replaced the heavy framed quest board with the clean blue card language used by the Lore Library.
+- Added an original Belle Époque floral-and-blue-butterfly banner with restrained Art Nouveau gold linework.
+- Updated quest-board labels to period-inspired invitations, engagements, promises, and closed chapters.
+- Preserved the campaign line: “A living record of promises, discoveries, and consequences.”
+- Switched the permanent Foundry manifest address to GitHub's direct raw endpoint to avoid redirect-related fetch errors.
+
 ## 0.4.1
 
 - Added an editable Foundry keybinding that opens the Campaign Journal with **J**.
