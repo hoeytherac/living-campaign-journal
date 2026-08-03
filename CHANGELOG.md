@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+- Added an editable Foundry keybinding that opens the Campaign Journal with **J**.
+
 ## 0.4.0
 
 - Added GM-imported private player dossiers resolved from Foundry User or Actor UUIDs.

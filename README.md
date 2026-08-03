@@ -37,7 +37,7 @@ The interface uses a near-black and midnight-blue foundation, luminous sapphire 
 1. Stop Foundry.
 2. Extract the `living-campaign-journal` folder into Foundry's `{userData}/Data/modules` directory. The folder name must remain `living-campaign-journal`.
 3. Start Foundry, open the world, and enable **Living Campaign Journal** under Manage Modules.
-4. Open the Journal sidebar and select **Campaign Journal**.
+4. Press **J** anywhere in Foundry to open the Campaign Journal. You can also open the Journal sidebar and select **Campaign Journal**.
 
 The first active GM automatically imports `content/campaign.json`.
 
