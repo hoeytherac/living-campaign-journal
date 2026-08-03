@@ -3,12 +3,16 @@ import assert from "node:assert/strict";
 const onceHooks = new Map();
 const persistentHooks = new Map();
 const registeredSettings = [];
+const registeredKeybindings = [];
 let socketRegistration;
+let journalRenderOptions;
 
 globalThis.foundry = {
   applications: {
     api: {
-      ApplicationV2: class {},
+      ApplicationV2: class {
+        render(options) { journalRenderOptions = options; }
+      },
       HandlebarsApplicationMixin: (Base) => class extends Base {}
     }
   }
@@ -25,6 +29,9 @@ globalThis.game = {
     ["gm-1", { id: "gm-1", isGM: true }]
   ]), { activeGM: { id: "gm-1" } }),
   modules: new Map([["living-campaign-journal", {}]]),
+  keybindings: {
+    register: (moduleId, key, config) => registeredKeybindings.push({ moduleId, key, config })
+  },
   settings: {
     register: (moduleId, key) => registeredSettings.push(`${moduleId}.${key}`)
   },
@@ -38,6 +45,13 @@ await onceHooks.get("init")();
 await onceHooks.get("ready")();
 
 assert.equal(registeredSettings.length, 5);
+assert.equal(registeredKeybindings.length, 1);
+assert.equal(registeredKeybindings[0].moduleId, "living-campaign-journal");
+assert.equal(registeredKeybindings[0].key, "openCampaignJournal");
+assert.deepEqual(registeredKeybindings[0].config.editable, [{ key: "KeyJ" }]);
+assert.equal(typeof registeredKeybindings[0].config.onDown, "function");
+assert.equal(registeredKeybindings[0].config.onDown(), true);
+assert.deepEqual(journalRenderOptions, { force: true });
 assert.equal(socketRegistration.channel, "module.living-campaign-journal");
 assert.equal(typeof socketRegistration.callback, "function");
 assert.equal(typeof game.modules.get("living-campaign-journal").api.open, "function");
@@ -45,4 +59,4 @@ assert.equal(typeof game.modules.get("living-campaign-journal").api.sync, "funct
 assert.equal(typeof game.modules.get("living-campaign-journal").api.importDossiers, "function");
 assert.equal(typeof persistentHooks.get("renderJournalDirectory"), "function");
 
-console.log("Foundry initialization and socket registration smoke test passed.");
+console.log("Foundry initialization, J keybinding, and socket registration smoke test passed.");

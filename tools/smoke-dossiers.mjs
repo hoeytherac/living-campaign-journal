@@ -86,6 +86,7 @@ globalThis.game = {
   folders,
   journal: journals,
   modules: new Map([["living-campaign-journal", {}]]),
+  keybindings: { register: () => {} },
   settings: {
     register: () => {},
     get: (_moduleId, key) => key === "rootFolderName" ? "Campaign Journal" : null
