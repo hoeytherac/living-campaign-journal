@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.1
+
+- Renamed the Grand Blooming script and stylesheet so Foundry loads the redesigned blue theme and quest-ledger labels instead of reusing cached legacy files.
+- Kept the v0.5.0 campaign wording, banner, quest ledger, lore, history, dossiers, and **J** shortcut unchanged.
+
 ## 0.5.0
 
 - Reframed the journal as **The Grand Blooming** within **The Blue Butterfly Cycle**.

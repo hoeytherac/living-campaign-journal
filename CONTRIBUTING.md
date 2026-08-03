@@ -5,7 +5,7 @@
 Use Node.js 22 or newer:
 
 ```sh
-node --check scripts/living-campaign-journal.js
+node --check scripts/grand-blooming-journal.js
 node tools/validate.mjs
 node tools/smoke-foundry.mjs
 node tools/smoke-dossiers.mjs
