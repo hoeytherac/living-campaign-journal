@@ -69,7 +69,7 @@ for (const marker of ["data-lcj-dossier-drop", "data-lcj-dossier-file", 'accept=
 }
 if (moduleScript.includes('textarea name="dossierJson"')) throw new Error("The retired private dossier paste box is still present.");
 
-const stylesheet = await readFile(path.join(root, "styles/world-map-journal.css"), "utf8");
+const stylesheet = await readFile(path.join(root, manifest.styles[0]), "utf8");
 const openingBraces = [...stylesheet.matchAll(/{/g)].length;
 const closingBraces = [...stylesheet.matchAll(/}/g)].length;
 if (openingBraces !== closingBraces) throw new Error("The stylesheet has unbalanced braces.");

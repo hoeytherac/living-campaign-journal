@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.5
+
+- Renamed the module script and stylesheet entrypoints so Foundry cannot reuse the cached 0.6.3 dossier importer after updating.
+- Keeps the 0.6.4 `.json` drop-zone importer unchanged while forcing its interface assets to load from fresh URLs.
+
 ## 0.6.4
 
 - Replaced the private dossier paste box and explanatory text with a compact `.json` file drop zone.

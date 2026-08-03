@@ -110,7 +110,7 @@ globalThis.JournalEntry = {
   }
 };
 
-await import("../scripts/world-map-journal.js");
+await import("../scripts/world-map-journal-0.6.5.js");
 await onceHooks.get("init")();
 await onceHooks.get("ready")();
 game.user = gm;

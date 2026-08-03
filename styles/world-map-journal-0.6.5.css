@@ -1,3 +1,4 @@
+/* Versioned stylesheet prevents Foundry and the browser from reusing an older module theme. */
 .living-campaign-journal {
   --lcj-black: #061d38;
   --lcj-midnight: #082d52;

@@ -5,7 +5,7 @@
 Use Node.js 22 or newer:
 
 ```sh
-node --check scripts/world-map-journal.js
+node --check scripts/world-map-journal-0.6.5.js
 node tools/validate.mjs
 node tools/smoke-foundry.mjs
 node tools/smoke-dossiers.mjs

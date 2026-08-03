@@ -1,3 +1,4 @@
+// Versioned entrypoint prevents Foundry and the browser from reusing an older module script.
 const MODULE_ID = "living-campaign-journal";
 const MODULE_TITLE = "Living Campaign Journal";
 const DEFAULT_SOURCE_PATH = `modules/${MODULE_ID}/content/campaign.json`;
