@@ -851,6 +851,16 @@ function addDirectoryButton(_application, html) {
 }
 
 Hooks.once("init", () => {
+  game.keybindings.register(MODULE_ID, "openCampaignJournal", {
+    name: `${MODULE_TITLE}: Open journal`,
+    hint: "Open the campaign quest board, lore archive, and journal.",
+    editable: [{ key: "KeyJ" }],
+    onDown: () => {
+      openCampaignJournal();
+      return true;
+    }
+  });
+
   game.settings.register(MODULE_ID, "sourcePath", {
     name: "Campaign JSON path",
     hint: "A Foundry-relative path or CORS-enabled URL containing the campaign library.",
