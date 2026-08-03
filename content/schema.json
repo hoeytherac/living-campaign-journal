@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/living-campaign-journal.schema.json",
+  "title": "Living Campaign Journal source",
+  "type": "object",
+  "required": ["schemaVersion", "campaign", "entries"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "campaign": {
+      "type": "object",
+      "required": ["title"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "subtitle": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "questStatuses": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "label"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "label": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "objective": {
+      "type": "object",
+      "required": ["id", "text"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "text": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "entry": {
+      "type": "object",
+      "required": ["id", "type", "title"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "type": { "enum": ["quest", "lore", "history"] },
+        "title": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string" },
+        "body": { "type": "string" },
+        "visibility": { "enum": ["players", "gm"] },
+        "revision": { "oneOf": [{ "type": "string" }, { "type": "number" }] },
+        "resetProgress": { "type": "boolean" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "quest": {
+          "type": "object",
+          "properties": {
+            "status": { "type": "string" },
+            "scope": { "enum": ["party", "personal"] },
+            "owner": { "type": "string" },
+            "rank": { "type": "string" },
+            "new": { "type": "boolean" },
+            "postedAt": { "type": "string" },
+            "giver": { "type": "string" },
+            "location": { "type": "string" },
+            "rewards": { "type": "string" },
+            "objectives": { "type": "array", "items": { "$ref": "#/$defs/objective" } }
+          },
+          "additionalProperties": false
+        },
+        "lore": {
+          "type": "object",
+          "properties": { "category": { "type": "string" } },
+          "additionalProperties": false
+        },
+        "history": {
+          "type": "object",
+          "properties": {
+            "date": { "type": "string" },
+            "sort": { "oneOf": [{ "type": "string" }, { "type": "number" }] }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
