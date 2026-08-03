@@ -81,7 +81,7 @@ The secure workflow is:
 1. Give Codex the backstory or ideas you want to develop. A Foundry User or Actor UUID is optional; omit it when you prefer to assign the dossier after import.
 2. Codex creates a private dossier package as a separate local JSON deliverable.
 3. In Foundry, the GM opens the campaign journal and selects **Private dossiers**.
-4. Paste the package and select **Import dossiers**.
+4. Drop the `.json` package into the importer, or click the drop area to choose it, then select **Import JSON**.
 
 Each imported character receives a private Foundry Journal. With a User or Actor UUID, it is immediately owned by that character's player. Without one, it remains GM-only until you assign Journal ownership in Foundry. The importer creates or updates:
 

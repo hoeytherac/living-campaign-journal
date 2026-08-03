@@ -10,7 +10,7 @@ const campaign = await readJson("content/campaign.json");
 await readJson("content/schema.json");
 const dossierTemplate = await readJson("examples/private-dossier-template.json");
 if (!manifest.esmodules?.length || !manifest.styles?.length) throw new Error("module.json must register its script and stylesheet.");
-await readFile(path.join(root, manifest.esmodules[0]), "utf8");
+const moduleScript = await readFile(path.join(root, manifest.esmodules[0]), "utf8");
 await readFile(path.join(root, manifest.styles[0]), "utf8");
 const mapAsset = await readFile(path.join(root, "assets/world-map.webp"));
 if (mapAsset.length < 100_000) throw new Error("The world map asset is missing or unexpectedly small.");
@@ -64,12 +64,20 @@ for (const match of template.matchAll(blockPattern)) {
 }
 if (blocks.length) throw new Error(`Unclosed Handlebars block: ${blocks.at(-1)}.`);
 
+for (const marker of ["data-lcj-dossier-drop", "data-lcj-dossier-file", 'accept=".json,application/json"', "readDossierFile"]) {
+  if (!moduleScript.includes(marker)) throw new Error(`The private dossier file importer is missing ${marker}.`);
+}
+if (moduleScript.includes('textarea name="dossierJson"')) throw new Error("The retired private dossier paste box is still present.");
+
 const stylesheet = await readFile(path.join(root, "styles/world-map-journal.css"), "utf8");
 const openingBraces = [...stylesheet.matchAll(/{/g)].length;
 const closingBraces = [...stylesheet.matchAll(/}/g)].length;
 if (openingBraces !== closingBraces) throw new Error("The stylesheet has unbalanced braces.");
 for (const match of stylesheet.matchAll(/url\(["']?(\.\.[^)"']+)["']?\)/g)) {
   await readFile(path.resolve(root, "styles", match[1]));
+}
+for (const selector of [".lcj-dossier-drop", ".lcj-dossier-drop.is-dragging", ".lcj-dossier-drop.has-file"]) {
+  if (!stylesheet.includes(selector)) throw new Error(`The private dossier drop-zone stylesheet is missing ${selector}.`);
 }
 
 console.log(`Validated module manifest, private dossier template, UI template, stylesheet assets, and ${campaign.entries.length} campaign entries.`);

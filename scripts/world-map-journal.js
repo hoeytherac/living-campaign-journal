@@ -478,24 +478,87 @@ async function importPrivateDossiers(payload) {
   return results;
 }
 
+function isJsonDossierFile(file) {
+  return Boolean(file?.name?.toLowerCase().endsWith(".json"));
+}
+
+async function readDossierFile(file) {
+  if (!file) throw new Error("Choose a dossier .json file before importing.");
+  if (!isJsonDossierFile(file)) throw new Error("Private dossiers must be imported from a .json file.");
+  const raw = (await file.text()).replace(/^\uFEFF/, "").trim();
+  if (!raw) throw new Error(`${file.name} is empty.`);
+  try {
+    return JSON.parse(raw);
+  } catch {
+    throw new Error(`${file.name} is not a valid dossier JSON file.`);
+  }
+}
+
 async function openDossierImporter() {
   const { DialogV2 } = foundry.applications.api;
-  const formData = await DialogV2.input({
-    window: { title: "Import Private Player Dossiers" },
-    content: `<div class="lcj-dossier-import">
-      <p>Paste a dossier package created with Codex. It may contain one dossier or a <code>dossiers</code> array.</p>
-      <p>A dossier may be imported without a User or Actor UUID. It will remain GM-only until you assign Journal ownership to a player.</p>
-      <p><strong>Privacy:</strong> the pasted text is written directly into restricted Foundry Journals and is not added to the module's public campaign JSON.</p>
-      <textarea name="dossierJson" rows="18" placeholder='{"schemaVersion":1,"dossiers":[...]}' autofocus></textarea>
-    </div>`,
-    ok: { label: "Import dossiers", icon: "fa-solid fa-user-shield" },
+  let selectedFile = null;
+  const content = document.createElement("div");
+  content.className = "lcj-dossier-import";
+  content.innerHTML = `<label class="lcj-dossier-drop" data-lcj-dossier-drop tabindex="0">
+    <input type="file" name="dossierFile" accept=".json,application/json" data-lcj-dossier-file>
+    <span class="lcj-dossier-drop-icon"><i class="fa-solid fa-file-arrow-up"></i></span>
+    <strong>Drop a dossier .json file here</strong>
+    <span>or click to choose a file</span>
+    <small data-lcj-dossier-filename aria-live="polite">No file selected</small>
+  </label>`;
+  const dossierFile = await DialogV2.input({
+    window: { title: "Import Private Dossier" },
+    content,
+    ok: {
+      label: "Import JSON",
+      icon: "fa-solid fa-user-shield",
+      callback: (_event, button) => selectedFile ?? button.form.elements.dossierFile.files?.[0] ?? null
+    },
+    render: (_event, dialog) => {
+      const root = dialog.element;
+      const dropZone = root.querySelector("[data-lcj-dossier-drop]");
+      const fileInput = root.querySelector("[data-lcj-dossier-file]");
+      const fileName = root.querySelector("[data-lcj-dossier-filename]");
+      const importButton = dialog.form?.querySelector('button[data-action="ok"]') ?? root.querySelector('button[data-action="ok"]');
+
+      const showFile = (file) => {
+        selectedFile = file ?? null;
+        const valid = isJsonDossierFile(selectedFile);
+        dropZone.classList.toggle("has-file", valid);
+        dropZone.classList.toggle("has-error", Boolean(selectedFile) && !valid);
+        fileName.textContent = selectedFile
+          ? valid ? selectedFile.name : "Choose a .json file"
+          : "No file selected";
+        if (importButton) importButton.disabled = !valid;
+      };
+
+      fileInput.addEventListener("change", () => showFile(fileInput.files?.[0]));
+      dropZone.addEventListener("keydown", (event) => {
+        if (!["Enter", " "].includes(event.key)) return;
+        event.preventDefault();
+        fileInput.click();
+      });
+      for (const eventName of ["dragenter", "dragover"]) {
+        dropZone.addEventListener(eventName, (event) => {
+          event.preventDefault();
+          dropZone.classList.add("is-dragging");
+        });
+      }
+      dropZone.addEventListener("dragleave", (event) => {
+        if (!dropZone.contains(event.relatedTarget)) dropZone.classList.remove("is-dragging");
+      });
+      dropZone.addEventListener("drop", (event) => {
+        event.preventDefault();
+        dropZone.classList.remove("is-dragging");
+        showFile(event.dataTransfer?.files?.[0]);
+      });
+      showFile(selectedFile);
+    },
     modal: true,
     rejectClose: false
   });
-  if (!formData) return [];
-  const raw = formData.dossierJson?.trim();
-  if (!raw) throw new Error("Paste a dossier package before importing.");
-  return importPrivateDossiers(JSON.parse(raw));
+  if (!dossierFile) return [];
+  return importPrivateDossiers(await readDossierFile(dossierFile));
 }
 
 function detailRows(source) {

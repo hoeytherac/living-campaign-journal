@@ -917,18 +917,77 @@
 .lcj-dossier-stats i { color: var(--lcj-blue); }
 .lcj-open-dossier { position: relative; z-index: 1; margin-top: 0.8rem; padding: 0.42rem 0.65rem; font-size: 0.72rem; }
 
-.lcj-dossier-import { display: grid; gap: 0.55rem; min-width: min(42rem, 75vw); }
-.lcj-dossier-import p { margin: 0; }
-.lcj-dossier-import textarea {
-  width: 100%;
-  min-height: 22rem;
-  padding: 0.7rem;
-  border: 1px solid rgba(48, 157, 255, 0.35);
+.lcj-dossier-import { min-width: min(32rem, 75vw); padding: 0.25rem; }
+
+.lcj-dossier-drop {
+  position: relative;
+  display: grid;
+  min-height: 15rem;
+  padding: 2rem;
+  place-items: center;
+  align-content: center;
+  gap: 0.55rem;
+  border: 2px dashed rgba(83, 176, 255, 0.55);
+  border-radius: 0.75rem;
   color: #dceeff;
-  background: #0a365f;
-  font-family: monospace;
-  font-size: 0.75rem;
-  resize: vertical;
+  background:
+    radial-gradient(circle at 50% 32%, rgba(43, 143, 231, 0.2), transparent 40%),
+    linear-gradient(145deg, #0a365f, #071b31);
+  box-shadow: inset 0 0 28px rgba(1, 10, 23, 0.4);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.lcj-dossier-drop:hover,
+.lcj-dossier-drop:focus,
+.lcj-dossier-drop.is-dragging {
+  border-color: var(--lcj-gold-pale);
+  box-shadow: inset 0 0 28px rgba(1, 10, 23, 0.4), 0 0 18px rgba(48, 157, 255, 0.24);
+  outline: none;
+}
+
+.lcj-dossier-drop.is-dragging { transform: scale(1.01); }
+.lcj-dossier-drop.has-file { border-style: solid; border-color: rgba(116, 211, 255, 0.85); }
+.lcj-dossier-drop.has-error { border-color: #cf6d72; }
+
+.lcj-dossier-drop input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.lcj-dossier-drop-icon {
+  display: grid;
+  width: 3.4rem;
+  height: 3.4rem;
+  place-items: center;
+  border: 1px solid rgba(217, 182, 93, 0.65);
+  border-radius: 50%;
+  color: var(--lcj-gold-pale);
+  background: radial-gradient(circle, #164d7c, #071525 72%);
+  box-shadow: 0 0 20px rgba(21, 149, 255, 0.28);
+  font-size: 1.35rem;
+}
+
+.lcj-dossier-drop strong {
+  color: var(--lcj-gold-pale);
+  font-family: var(--font-h2, Georgia, serif);
+  font-size: 1.15rem;
+}
+
+.lcj-dossier-drop > span:not(.lcj-dossier-drop-icon) { color: #9bb8cf; font-size: 0.78rem; }
+.lcj-dossier-drop small {
+  margin-top: 0.45rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  color: #bfe7ff;
+  background: rgba(1, 12, 25, 0.58);
+  font-size: 0.72rem;
 }
 
 .journal-page-content .lcj-dossier-page {

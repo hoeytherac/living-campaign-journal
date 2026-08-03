@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.4
+
+- Replaced the private dossier paste box and explanatory text with a compact `.json` file drop zone.
+- Added click-to-browse and drag-and-drop dossier imports with selected-file feedback and clear invalid-file errors.
+
 ## 0.6.3
 
 - Removed and explicitly retired the four unwanted demonstration quests again, leaving the First Steps festival and five campaign quest lines.
