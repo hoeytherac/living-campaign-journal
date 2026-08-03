@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "dossiers": [
+    {
+      "playerUuid": "User.REPLACE_WITH_USER_ID",
+      "characterName": "Character Name",
+      "title": "Character Name — Private Journal",
+      "revision": 1,
+      "backstory": {
+        "title": "Character Name's Backstory",
+        "summary": "A short private summary of the character's origin.",
+        "body": "<p>Write the complete crafted backstory here.</p>"
+      },
+      "knowledge": [
+        {
+          "id": "example-secret",
+          "title": "An Example Secret",
+          "summary": "A short reminder of what this character knows.",
+          "body": "<p>Write the complete private information here.</p>",
+          "tags": ["example", "private"]
+        }
+      ]
+    }
+  ]
+}
