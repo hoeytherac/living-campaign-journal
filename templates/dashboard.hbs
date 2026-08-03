@@ -1,14 +1,14 @@
 <section class="lcj-shell">
   <header class="lcj-hero">
     <div class="lcj-hero-copy">
-      <span class="lcj-kicker">Living Campaign Archive</span>
+      <span class="lcj-kicker">The Blue Butterfly Cycle</span>
       <h1>{{campaignTitle}}</h1>
       <p>{{campaignSubtitle}}</p>
     </div>
     <div class="lcj-tools">
       <label class="lcj-search">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="search" data-lcj-search placeholder="Search the archive…" aria-label="Search the campaign journal">
+        <input type="search" data-lcj-search placeholder="Search the living record…" aria-label="Search the campaign journal">
       </label>
       {{#if canManage}}
         <button type="button" class="lcj-icon-button" data-action="importDossiers" title="Paste and import private player dossiers">
@@ -43,9 +43,9 @@
       <div class="lcj-board-frame">
         <div class="lcj-board-inner">
           <div class="lcj-board-title">
-            <span class="lcj-eyebrow">Guild notices & adventurer requests</span>
-            <h2>Butterfly Guild Quest Board</h2>
-            <p>Read the postings, choose the party's next destination, or join an ally's personal story.</p>
+            <span class="lcj-eyebrow">Invitations, errands & private promises</span>
+            <h2>The Grand Blooming Ledger</h2>
+            <p>Read the invitations, choose the party's next destination, or join an ally's personal promise.</p>
           </div>
 
           <aside class="lcj-choice-summary">
@@ -81,7 +81,6 @@
                 <div class="lcj-card-grid lcj-quest-grid">
                   {{#each quests}}
                     <article class="lcj-card lcj-quest-card status-{{statusId}} {{#if personal}}is-personal{{/if}} {{#if hasSelected}}is-selected{{/if}}" data-lcj-card>
-                      <div class="lcj-quest-pin" aria-hidden="true"></div>
                       <div class="lcj-card-topline">
                         {{#if isNew}}<span class="lcj-new-badge"><i class="fa-solid fa-sparkles"></i> New</span>{{/if}}
                         {{#if personal}}<span class="lcj-personal-badge"><i class="fa-solid fa-star"></i> Personal</span>{{/if}}
@@ -103,13 +102,13 @@
 
                       {{#if selectedUsers.length}}
                         <div class="lcj-adventurers">
-                          <span>Party votes</span>
+                          <span>Party choices</span>
                           <div>{{#each selectedUsers}}<span class="lcj-adventurer" title="{{name}}">{{initial}}</span>{{/each}}</div>
                         </div>
                       {{/if}}
                       {{#if participants.length}}
                         <div class="lcj-adventurers">
-                          <span>Joined adventurers</span>
+                          <span>Joined companions</span>
                           <div>{{#each participants}}<span class="lcj-adventurer" title="{{name}}">{{initial}}</span>{{/each}}</div>
                         </div>
                       {{/if}}
@@ -152,7 +151,7 @@
               </section>
             {{/if}}
           {{/each}}
-          {{#unless quests.length}}<div class="lcj-empty"><i class="fa-solid fa-scroll"></i><p>The guild board has no visible postings yet.</p></div>{{/unless}}
+          {{#unless quests.length}}<div class="lcj-empty"><i class="fa-solid fa-scroll"></i><p>The ledger has no visible entries yet.</p></div>{{/unless}}
         </div>
       </div>
     </section>
