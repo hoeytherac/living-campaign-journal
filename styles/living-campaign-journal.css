@@ -1,16 +1,16 @@
 .living-campaign-journal {
-  --lcj-black: #03050a;
-  --lcj-midnight: #071426;
-  --lcj-navy: #0a2038;
-  --lcj-ink: #eaf4ff;
-  --lcj-muted: #8da5bd;
-  --lcj-panel: rgba(4, 10, 19, 0.96);
-  --lcj-panel-soft: rgba(7, 20, 36, 0.88);
-  --lcj-line: rgba(48, 157, 255, 0.22);
-  --lcj-blue: #1595ff;
-  --lcj-blue-soft: #66c9ff;
-  --lcj-gold: #d9b65d;
-  --lcj-gold-pale: #f5df9b;
+  --lcj-black: #061d38;
+  --lcj-midnight: #082d52;
+  --lcj-navy: #0b3e6b;
+  --lcj-ink: #f5fbff;
+  --lcj-muted: #b2cce2;
+  --lcj-panel: rgba(8, 38, 70, 0.96);
+  --lcj-panel-soft: rgba(10, 48, 84, 0.9);
+  --lcj-line: rgba(132, 201, 255, 0.28);
+  --lcj-blue: #54b8ff;
+  --lcj-blue-soft: #a9ddff;
+  --lcj-gold: #c8a75d;
+  --lcj-gold-pale: #f1dca0;
   --lcj-red: #cf6772;
   min-width: 640px;
 }
@@ -20,9 +20,9 @@
   overflow: hidden;
   color: var(--lcj-ink);
   background:
-    radial-gradient(circle at 84% 5%, rgba(20, 123, 255, 0.17), transparent 28rem),
-    radial-gradient(circle at 10% 80%, rgba(217, 182, 93, 0.06), transparent 22rem),
-    linear-gradient(145deg, #07111e, var(--lcj-black) 72%);
+    radial-gradient(circle at 84% 5%, rgba(123, 195, 255, 0.24), transparent 30rem),
+    radial-gradient(circle at 8% 82%, rgba(58, 132, 197, 0.24), transparent 24rem),
+    linear-gradient(145deg, #0d4f83, #082f57 48%, var(--lcj-black) 100%);
 }
 
 .lcj-shell {
@@ -39,20 +39,20 @@
   align-items: flex-start;
   justify-content: center;
   gap: 1rem;
-  min-height: 200px;
+  min-height: 185px;
   padding: 1.6rem 1.75rem 1.35rem;
   border-bottom: 1px solid rgba(217, 182, 93, 0.28);
   background:
-    linear-gradient(90deg, rgba(3, 5, 10, 0.98) 0%, rgba(3, 5, 10, 0.88) 35%, rgba(3, 5, 10, 0.18) 76%),
-    linear-gradient(0deg, rgba(3, 5, 10, 0.4), transparent 45%),
-    url("../assets/blue-butterfly-banner.png") center right / cover no-repeat;
-  box-shadow: inset 0 -18px 34px rgba(0, 0, 0, 0.38);
+    linear-gradient(90deg, rgba(6, 37, 72, 0.97) 0%, rgba(6, 37, 72, 0.9) 34%, rgba(6, 37, 72, 0.28) 68%, rgba(6, 37, 72, 0.06) 100%),
+    linear-gradient(0deg, rgba(4, 30, 60, 0.34), transparent 48%),
+    url("../assets/grand-blooming-banner.webp") center right / cover no-repeat;
+  box-shadow: inset 0 -14px 28px rgba(3, 25, 52, 0.36);
 }
 
 .lcj-hero-copy {
-  width: min(34rem, 62%);
+  width: min(36rem, 64%);
   min-width: 20rem;
-  text-shadow: 0 3px 16px #000;
+  text-shadow: 0 3px 16px rgba(2, 24, 50, 0.78);
 }
 
 .lcj-kicker,
@@ -75,10 +75,10 @@
   letter-spacing: 0.015em;
 }
 
-.lcj-hero h1 { font-size: 2rem; }
+.lcj-hero h1 { font-size: 2.2rem; }
 .lcj-section-heading h2 { font-size: 1.45rem; }
-.lcj-hero h1 { text-shadow: 0 0 22px rgba(21, 149, 255, 0.24), 0 3px 14px #000; }
-.lcj-hero p { margin: 0.25rem 0 0; color: #a9bfd2; }
+.lcj-hero h1 { text-shadow: 0 0 22px rgba(84, 184, 255, 0.26), 0 3px 14px rgba(2, 24, 50, 0.9); }
+.lcj-hero p { margin: 0.25rem 0 0; color: #d7ebfa; }
 
 .lcj-tools {
   display: flex;
@@ -95,7 +95,7 @@
   border: 1px solid rgba(48, 157, 255, 0.35);
   border-radius: 999px;
   color: var(--lcj-muted);
-  background: rgba(3, 8, 16, 0.78);
+  background: rgba(7, 42, 77, 0.78);
   backdrop-filter: blur(5px);
 }
 
@@ -131,7 +131,7 @@
   border: 1px solid rgba(217, 182, 93, 0.5);
   border-radius: 0.45rem;
   color: var(--lcj-gold-pale);
-  background: rgba(3, 8, 16, 0.78);
+  background: rgba(7, 42, 77, 0.78);
   backdrop-filter: blur(5px);
   white-space: nowrap;
 }
@@ -149,7 +149,7 @@
   gap: 0.25rem;
   padding: 0 1.5rem;
   border-bottom: 1px solid rgba(48, 157, 255, 0.18);
-  background: linear-gradient(180deg, rgba(5, 15, 28, 0.98), rgba(2, 7, 13, 0.98));
+  background: linear-gradient(180deg, rgba(8, 45, 80, 0.98), rgba(5, 31, 59, 0.98));
 }
 
 .lcj-tabs button {
@@ -184,6 +184,7 @@
   min-height: 0;
   overflow: auto;
   padding: 1.5rem;
+  background: linear-gradient(145deg, rgba(37, 119, 183, 0.08), transparent 38%);
   scrollbar-color: var(--lcj-blue) transparent;
 }
 
@@ -215,25 +216,23 @@
 
 .lcj-board-frame {
   min-height: 100%;
-  padding: 0.65rem;
-  border: clamp(2.2rem, 4.8vw, 4rem) solid transparent;
-  border-image-source: url("../assets/anime-quest-board.png");
-  border-image-slice: 118 fill;
-  border-image-width: 1;
-  border-image-repeat: stretch;
-  background: #050b14;
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.42), 0 0 24px rgba(21, 149, 255, 0.08);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .lcj-board-inner {
   min-height: 34rem;
-  padding: 0.4rem;
+  padding: 0.15rem 0.35rem 1rem;
 }
 
 .lcj-board-title {
-  margin: 0 auto 1.1rem;
-  text-align: center;
-  text-shadow: 0 3px 12px #000;
+  margin: 0 0 1rem;
+  padding: 0.15rem 0 0.95rem;
+  border-bottom: 1px solid rgba(200, 167, 93, 0.42);
+  text-align: left;
+  text-shadow: none;
 }
 
 .lcj-board-title h2 {
@@ -241,14 +240,14 @@
   border: 0;
   color: var(--lcj-gold-pale);
   font-family: var(--font-h1, Georgia, serif);
-  font-size: 1.72rem;
+  font-size: 1.55rem;
   font-weight: 600;
   letter-spacing: 0.025em;
 }
 
 .lcj-board-title p {
   margin: 0.25rem 0 0;
-  color: #8faac3;
+  color: #c2dbed;
   font-size: 0.8rem;
 }
 
@@ -259,10 +258,10 @@
   gap: 0.75rem;
   margin: 0 0 1.1rem;
   padding: 0.7rem;
-  border: 1px solid rgba(217, 182, 93, 0.34);
-  border-radius: 0.5rem;
-  background: linear-gradient(135deg, rgba(4, 15, 29, 0.96), rgba(6, 28, 51, 0.88));
-  box-shadow: inset 0 0 24px rgba(21, 149, 255, 0.06), 0 8px 20px rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(155, 211, 255, 0.34);
+  border-radius: 0.72rem;
+  background: linear-gradient(135deg, rgba(15, 72, 119, 0.92), rgba(8, 48, 86, 0.9));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 8px 20px rgba(3, 25, 52, 0.2);
 }
 
 .lcj-choice-main {
@@ -323,7 +322,7 @@
   gap: 0.6rem;
   margin: 0 0 0.65rem;
   padding: 0 0.2rem 0.45rem;
-  border-bottom: 1px solid rgba(217, 182, 93, 0.28);
+  border-bottom: 1px solid rgba(200, 167, 93, 0.34);
 }
 
 .lcj-board-section-header > i {
@@ -347,7 +346,7 @@
   border: 1px solid rgba(48, 157, 255, 0.28);
   border-radius: 999px;
   color: var(--lcj-blue-soft);
-  background: rgba(3, 12, 24, 0.7);
+  background: rgba(7, 46, 83, 0.74);
   font-size: 0.68rem;
   text-align: center;
 }
@@ -366,9 +365,9 @@
   border: 1px solid rgba(48, 157, 255, 0.2);
   border-radius: 0.6rem;
   background:
-    linear-gradient(155deg, rgba(48, 157, 255, 0.065), transparent 52%),
+    linear-gradient(155deg, rgba(132, 201, 255, 0.11), transparent 52%),
     var(--lcj-panel-soft);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  box-shadow: 0 10px 24px rgba(3, 25, 52, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.04);
   transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
 }
 
@@ -389,10 +388,10 @@
 
 .lcj-quest-card {
   overflow: visible;
-  border-color: rgba(217, 182, 93, 0.26);
+  border-color: rgba(132, 201, 255, 0.3);
   background:
-    linear-gradient(155deg, rgba(27, 72, 111, 0.16), transparent 46%),
-    linear-gradient(180deg, rgba(8, 25, 45, 0.98), rgba(3, 10, 19, 0.98));
+    linear-gradient(155deg, rgba(123, 195, 255, 0.13), transparent 46%),
+    linear-gradient(180deg, rgba(12, 62, 105, 0.96), rgba(7, 41, 75, 0.96));
 }
 
 .lcj-quest-card.is-selected {
@@ -404,20 +403,11 @@
   border-color: rgba(217, 182, 93, 0.52);
   background:
     linear-gradient(145deg, rgba(217, 182, 93, 0.08), transparent 42%),
-    linear-gradient(180deg, rgba(9, 27, 48, 0.99), rgba(4, 11, 21, 0.99));
+    linear-gradient(180deg, rgba(14, 66, 108, 0.98), rgba(8, 42, 76, 0.98));
 }
 
 .lcj-quest-pin {
-  position: absolute;
-  z-index: 2;
-  top: -0.38rem;
-  left: 50%;
-  width: 0.72rem;
-  height: 0.72rem;
-  border: 1px solid #ffe7a0;
-  background: linear-gradient(135deg, var(--lcj-gold-pale), #8f6a20);
-  box-shadow: 0 2px 6px #000, 0 0 8px rgba(217, 182, 93, 0.36);
-  transform: translateX(-50%) rotate(45deg);
+  display: none;
 }
 
 .lcj-quest-card.status-active::before { background: var(--lcj-blue); box-shadow: 0 0 12px rgba(21, 149, 255, 0.72); }
@@ -502,7 +492,7 @@
 
 .lcj-card > p {
   margin: 0 0 0.75rem;
-  color: #b8c9d8;
+  color: #d3e4f1;
   font-size: 0.86rem;
   line-height: 1.45;
 }
@@ -602,7 +592,7 @@
   border: 1px solid rgba(48, 157, 255, 0.32);
   border-radius: 0.32rem;
   color: #b9dfff;
-  background: rgba(6, 24, 43, 0.74);
+  background: rgba(15, 72, 119, 0.76);
   font-size: 0.7rem;
   font-weight: 700;
 }
@@ -623,9 +613,9 @@
   border: 1px solid rgba(217, 182, 93, 0.35);
   border-radius: 0.75rem;
   background:
-    linear-gradient(90deg, rgba(3, 5, 10, 0.99) 0%, rgba(3, 8, 16, 0.92) 52%, rgba(3, 8, 16, 0.55)),
-    url("../assets/blue-butterfly-banner.png") top right / cover no-repeat;
-  box-shadow: inset 0 0 38px rgba(21, 149, 255, 0.06), 0 16px 36px rgba(0, 0, 0, 0.34);
+    linear-gradient(90deg, rgba(7, 43, 79, 0.98) 0%, rgba(8, 49, 88, 0.92) 52%, rgba(8, 49, 88, 0.36)),
+    url("../assets/grand-blooming-banner.webp") top right / cover no-repeat;
+  box-shadow: inset 0 0 38px rgba(132, 201, 255, 0.08), 0 14px 30px rgba(3, 25, 52, 0.25);
 }
 
 .lcj-story-intro { margin: -0.3rem 0 1.1rem; color: #9fb4c8; font-size: 0.82rem; }
@@ -636,7 +626,7 @@
   border: 1px solid rgba(217, 182, 93, 0.42);
   border-radius: 0.35rem;
   color: var(--lcj-gold-pale);
-  background: rgba(5, 22, 40, 0.82);
+  background: rgba(12, 61, 103, 0.84);
   box-shadow: none;
 }
 
@@ -655,9 +645,9 @@
   border: 1px solid rgba(48, 157, 255, 0.26);
   border-radius: 0.55rem;
   background:
-    linear-gradient(145deg, rgba(21, 149, 255, 0.09), transparent 42%),
-    linear-gradient(180deg, rgba(7, 23, 41, 0.97), rgba(3, 10, 19, 0.99));
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.025);
+    linear-gradient(145deg, rgba(132, 201, 255, 0.12), transparent 42%),
+    linear-gradient(180deg, rgba(12, 62, 105, 0.97), rgba(7, 42, 77, 0.98));
+  box-shadow: 0 10px 26px rgba(3, 25, 52, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .lcj-dossier-card::after {
@@ -716,7 +706,7 @@
   padding: 0.7rem;
   border: 1px solid rgba(48, 157, 255, 0.35);
   color: #dceeff;
-  background: #050d17;
+  background: #0a365f;
   font-family: monospace;
   font-size: 0.75rem;
   resize: vertical;
@@ -784,8 +774,8 @@
   gap: 1rem;
   padding: 0.55rem 1.5rem;
   border-top: 1px solid rgba(217, 182, 93, 0.18);
-  color: #80786d;
-  background: rgba(0,0,0,0.25);
+  color: #9fb9cf;
+  background: rgba(5, 32, 61, 0.64);
   font-size: 0.7rem;
 }
 
@@ -808,7 +798,7 @@
   .lcj-search { flex: 1 1 100%; min-width: 0; }
   .lcj-tabs { overflow-x: auto; padding-inline: 0.5rem; }
   .lcj-content { padding: 1rem; }
-  .lcj-board-frame { padding: 0.35rem; border-width: 2.25rem; }
+  .lcj-board-frame { padding: 0; }
   .lcj-choice-summary { align-items: stretch; flex-direction: column; }
   .lcj-joined-summary { padding: 0.6rem 0 0; border-top: 1px solid rgba(48, 157, 255, 0.2); border-left: 0; }
 }
