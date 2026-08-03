@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.6
+
+- Fixed the GitHub release validator so it checks the versioned module script declared by `module.json` instead of the retired stable filename.
+- Reissued the cache-proof dossier importer as a complete installable Foundry release.
+
 ## 0.6.5
 
 - Renamed the module script and stylesheet entrypoints so Foundry cannot reuse the cached 0.6.3 dossier importer after updating.
