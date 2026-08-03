@@ -30,7 +30,7 @@ jobs:
             echo "Release tag must be $EXPECTED_TAG"
             exit 1
           fi
-          node --check scripts/living-campaign-journal.js
+          node --check scripts/world-map-journal.js
           node tools/validate.mjs
           node tools/smoke-foundry.mjs
           node tools/smoke-dossiers.mjs

@@ -39,7 +39,7 @@
   </nav>
 
   <main class="lcj-content">
-    <section class="lcj-panel" data-lcj-panel="quests" {{#unless tabs.0.active}}hidden{{/unless}}>
+    <section class="lcj-panel" data-lcj-panel="quests" {{#unless questsActive}}hidden{{/unless}}>
       <div class="lcj-board-frame">
         <div class="lcj-board-inner">
           <div class="lcj-board-title">
@@ -156,7 +156,82 @@
       </div>
     </section>
 
-    <section class="lcj-panel" data-lcj-panel="lore" {{#unless tabs.1.active}}hidden{{/unless}}>
+    <section class="lcj-panel lcj-map-panel" data-lcj-panel="map" {{#unless mapActive}}hidden{{/unless}}>
+      <div class="lcj-section-heading lcj-map-heading">
+        <div>
+          <span class="lcj-eyebrow">Chart the world and every promise upon it</span>
+          <h2>The Pilgrim's World Map</h2>
+        </div>
+        {{#if canManage}}
+          <button type="button" class="lcj-map-add" data-action="addMapPin"><i class="fa-solid fa-map-pin"></i> Add a pin</button>
+        {{/if}}
+      </div>
+      <p class="lcj-map-intro">Drag to travel across the map, use the controls to zoom, and select a marker to read what the party knows.</p>
+      <div class="lcj-map-workspace">
+        <div class="lcj-map-viewport" data-lcj-map-viewport>
+          <div class="lcj-map-canvas" data-lcj-map-canvas>
+            <img src="{{mapImagePath}}" alt="World map of Kaeltharion" draggable="false">
+            {{#each mapPins}}
+              <button type="button" class="lcj-map-pin lcj-map-pin-{{type}}" style="left:{{x}}%;top:{{y}}%;--lcj-pin-color:{{color}}" data-action="openMapPin" data-lcj-map-pin data-pin-id="{{id}}" aria-label="{{typeLabel}}: {{title}}" title="{{title}}">
+                <i class="{{iconClass}}"></i>
+              </button>
+            {{/each}}
+          </div>
+          <div class="lcj-map-status" data-lcj-map-status hidden></div>
+          <div class="lcj-map-controls" aria-label="Map controls">
+            <button type="button" data-action="mapZoomOut" title="Zoom out"><i class="fa-solid fa-minus"></i></button>
+            <span data-lcj-map-zoom-label>100%</span>
+            <button type="button" data-action="mapZoomIn" title="Zoom in"><i class="fa-solid fa-plus"></i></button>
+            <button type="button" data-action="mapReset" title="Reset map view"><i class="fa-solid fa-crosshairs"></i></button>
+          </div>
+        </div>
+
+        <aside class="lcj-map-sidebar">
+          <div class="lcj-map-legend">
+            <span><i class="fa-solid fa-location-dot"></i> Place</span>
+            <span><i class="fa-solid fa-scroll"></i> Quest</span>
+            <span><i class="fa-solid fa-book-open"></i> Lore</span>
+            <span><i class="fa-solid fa-triangle-exclamation"></i> Danger</span>
+            <span><i class="fa-solid fa-user"></i> Person</span>
+            <span><i class="fa-solid fa-sparkles"></i> Mystery</span>
+          </div>
+
+          {{#if hasMapPins}}
+            <div class="lcj-map-pin-list">
+              <span class="lcj-map-sidebar-label">Recorded markers</span>
+              {{#each mapPins}}
+                <button type="button" data-action="openMapPin" data-pin-id="{{id}}">
+                  <i class="{{iconClass}}" style="color:{{color}}"></i>
+                  <span>{{title}}</span>
+                </button>
+              {{/each}}
+            </div>
+          {{else}}
+            <div class="lcj-map-empty">
+              <i class="fa-regular fa-map"></i>
+              <p>No markers have been recorded yet.</p>
+              {{#if canManage}}<small>Select <strong>Add a pin</strong>, then click anywhere on the map.</small>{{/if}}
+            </div>
+          {{/if}}
+
+          <article class="lcj-map-detail" data-lcj-map-detail hidden>
+            <div class="lcj-map-detail-type"><i data-lcj-map-detail-icon></i><span data-lcj-map-detail-type></span></div>
+            <h3 data-lcj-map-detail-title></h3>
+            <p data-lcj-map-detail-description></p>
+            <button type="button" class="lcj-map-linked" data-action="openMapJournal" data-lcj-map-linked data-pin-id=""><i class="fa-solid fa-book-open"></i> Open linked journal</button>
+            {{#if canManage}}
+              <div class="lcj-map-detail-actions">
+                <button type="button" data-action="editMapPin" data-pin-id=""><i class="fa-solid fa-pen"></i> Edit</button>
+                <button type="button" data-action="moveMapPin" data-pin-id=""><i class="fa-solid fa-arrows-up-down-left-right"></i> Move</button>
+                <button type="button" class="lcj-map-delete" data-action="deleteMapPin" data-pin-id=""><i class="fa-solid fa-trash"></i> Delete</button>
+              </div>
+            {{/if}}
+          </article>
+        </aside>
+      </div>
+    </section>
+
+    <section class="lcj-panel" data-lcj-panel="lore" {{#unless loreActive}}hidden{{/unless}}>
       <div class="lcj-section-heading">
         <div>
           <span class="lcj-eyebrow">What the party has learned</span>
@@ -179,7 +254,7 @@
       </div>
     </section>
 
-    <section class="lcj-panel" data-lcj-panel="history" {{#unless tabs.2.active}}hidden{{/unless}}>
+    <section class="lcj-panel" data-lcj-panel="history" {{#unless historyActive}}hidden{{/unless}}>
       <div class="lcj-section-heading">
         <div>
           <span class="lcj-eyebrow">The story so far</span>

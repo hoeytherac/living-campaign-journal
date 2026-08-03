@@ -108,7 +108,7 @@ globalThis.JournalEntry = {
   }
 };
 
-await import("../scripts/grand-blooming-journal.js");
+await import("../scripts/world-map-journal.js");
 await onceHooks.get("init")();
 await onceHooks.get("ready")();
 game.user = gm;

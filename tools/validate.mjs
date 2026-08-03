@@ -9,6 +9,11 @@ const manifest = await readJson("module.json");
 const campaign = await readJson("content/campaign.json");
 await readJson("content/schema.json");
 const dossierTemplate = await readJson("examples/private-dossier-template.json");
+if (!manifest.esmodules?.length || !manifest.styles?.length) throw new Error("module.json must register its script and stylesheet.");
+await readFile(path.join(root, manifest.esmodules[0]), "utf8");
+await readFile(path.join(root, manifest.styles[0]), "utf8");
+const mapAsset = await readFile(path.join(root, "assets/world-map.webp"));
+if (mapAsset.length < 100_000) throw new Error("The world map asset is missing or unexpectedly small.");
 
 if (manifest.id !== path.basename(root)) throw new Error("module.json id must match the module folder name.");
 if (campaign.schemaVersion !== 1) throw new Error("campaign.json must use schemaVersion 1.");
@@ -39,6 +44,9 @@ for (const entry of campaign.entries) {
 }
 
 const template = await readFile(path.join(root, "templates/dashboard.hbs"), "utf8");
+for (const marker of ["data-lcj-panel=\"map\"", "data-lcj-map-viewport", "data-lcj-map-pin", "data-action=\"addMapPin\""]) {
+  if (!template.includes(marker)) throw new Error(`The interactive map template is missing ${marker}.`);
+}
 const blocks = [];
 const blockPattern = /{{([#/])\s*(if|unless|each)\b[^}]*}}/g;
 for (const match of template.matchAll(blockPattern)) {
@@ -48,7 +56,7 @@ for (const match of template.matchAll(blockPattern)) {
 }
 if (blocks.length) throw new Error(`Unclosed Handlebars block: ${blocks.at(-1)}.`);
 
-const stylesheet = await readFile(path.join(root, "styles/grand-blooming-journal.css"), "utf8");
+const stylesheet = await readFile(path.join(root, "styles/world-map-journal.css"), "utf8");
 const openingBraces = [...stylesheet.matchAll(/{/g)].length;
 const closingBraces = [...stylesheet.matchAll(/}/g)].length;
 if (openingBraces !== closingBraces) throw new Error("The stylesheet has unbalanced braces.");

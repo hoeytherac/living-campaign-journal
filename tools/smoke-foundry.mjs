@@ -8,6 +8,9 @@ let socketRegistration;
 let journalRenderOptions;
 
 globalThis.foundry = {
+  utils: {
+    deepClone: (value) => structuredClone(value)
+  },
   applications: {
     api: {
       ApplicationV2: class {
@@ -33,18 +36,20 @@ globalThis.game = {
     register: (moduleId, key, config) => registeredKeybindings.push({ moduleId, key, config })
   },
   settings: {
-    register: (moduleId, key) => registeredSettings.push(`${moduleId}.${key}`)
+    register: (moduleId, key) => registeredSettings.push(`${moduleId}.${key}`),
+    get: (_moduleId, key) => key === "mapPins" ? { schemaVersion: 1, pins: [] } : undefined
   },
   socket: {
     on: (channel, callback) => { socketRegistration = { channel, callback }; }
   }
 };
 
-await import("../scripts/grand-blooming-journal.js");
+await import("../scripts/world-map-journal.js");
 await onceHooks.get("init")();
 await onceHooks.get("ready")();
 
-assert.equal(registeredSettings.length, 5);
+assert.equal(registeredSettings.length, 6);
+assert.ok(registeredSettings.includes("living-campaign-journal.mapPins"));
 assert.equal(registeredKeybindings.length, 1);
 assert.equal(registeredKeybindings[0].moduleId, "living-campaign-journal");
 assert.equal(registeredKeybindings[0].key, "openCampaignJournal");
@@ -57,6 +62,10 @@ assert.equal(typeof socketRegistration.callback, "function");
 assert.equal(typeof game.modules.get("living-campaign-journal").api.open, "function");
 assert.equal(typeof game.modules.get("living-campaign-journal").api.sync, "function");
 assert.equal(typeof game.modules.get("living-campaign-journal").api.importDossiers, "function");
+assert.equal(typeof game.modules.get("living-campaign-journal").api.getMapPins, "function");
+assert.equal(typeof game.modules.get("living-campaign-journal").api.setMapPins, "function");
+assert.deepEqual(game.modules.get("living-campaign-journal").api.getMapPins(), []);
 assert.equal(typeof persistentHooks.get("renderJournalDirectory"), "function");
+assert.equal(typeof persistentHooks.get("updateSetting"), "function");
 
 console.log("Foundry initialization, J keybinding, and socket registration smoke test passed.");

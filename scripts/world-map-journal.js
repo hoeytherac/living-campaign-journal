@@ -2,6 +2,15 @@ const MODULE_ID = "living-campaign-journal";
 const MODULE_TITLE = "Living Campaign Journal";
 const DEFAULT_SOURCE_PATH = `modules/${MODULE_ID}/content/campaign.json`;
 const SOCKET_CHANNEL = `module.${MODULE_ID}`;
+const WORLD_MAP_PATH = `modules/${MODULE_ID}/assets/world-map.webp`;
+const MAP_PIN_TYPES = Object.freeze({
+  location: { label: "Place", iconClass: "fa-solid fa-location-dot", color: "#54b8ff" },
+  quest: { label: "Quest", iconClass: "fa-solid fa-scroll", color: "#f1dca0" },
+  lore: { label: "Lore", iconClass: "fa-solid fa-book-open", color: "#bd9cff" },
+  danger: { label: "Danger", iconClass: "fa-solid fa-triangle-exclamation", color: "#e87882" },
+  person: { label: "Person", iconClass: "fa-solid fa-user", color: "#77ddba" },
+  mystery: { label: "Mystery", iconClass: "fa-solid fa-sparkles", color: "#9ed9ff" }
+});
 
 let journalApp;
 let syncTimer;
@@ -44,6 +53,105 @@ function plainText(value = "") {
   const element = document.createElement("div");
   element.innerHTML = String(value);
   return element.textContent?.trim() ?? "";
+}
+
+function clamp(value, minimum, maximum) {
+  return Math.min(maximum, Math.max(minimum, value));
+}
+
+function normalizeMapPin(pin) {
+  if (!pin || typeof pin !== "object") return null;
+  const type = MAP_PIN_TYPES[pin.type] ? pin.type : "location";
+  const title = String(pin.title ?? "").trim();
+  if (!pin.id || !title) return null;
+  return {
+    id: String(pin.id),
+    title,
+    description: String(pin.description ?? "").trim(),
+    type,
+    x: clamp(Number(pin.x) || 0, 0, 100),
+    y: clamp(Number(pin.y) || 0, 0, 100),
+    journalUuid: String(pin.journalUuid ?? "").trim()
+  };
+}
+
+function currentMapPins() {
+  const stored = game.settings.get(MODULE_ID, "mapPins") ?? {};
+  const pins = Array.isArray(stored) ? stored : stored.pins;
+  return (Array.isArray(pins) ? pins : []).map(normalizeMapPin).filter(Boolean);
+}
+
+function mapPinView(pin) {
+  const type = MAP_PIN_TYPES[pin.type];
+  return {
+    ...pin,
+    typeLabel: type.label,
+    iconClass: type.iconClass,
+    color: type.color,
+    hasJournalLink: Boolean(pin.journalUuid)
+  };
+}
+
+function newMapPinId() {
+  return foundry.utils?.randomID?.() ?? globalThis.crypto?.randomUUID?.() ?? `pin-${Date.now().toString(36)}`;
+}
+
+function mapPinTypeOptions(selectedType) {
+  return Object.entries(MAP_PIN_TYPES)
+    .map(([value, type]) => `<option value="${value}"${value === selectedType ? " selected" : ""}>${escapeHtml(type.label)}</option>`)
+    .join("");
+}
+
+function mapJournalOptions(selectedUuid) {
+  const entries = managedEntries().sort((left, right) => left.name.localeCompare(right.name));
+  return [
+    '<option value="">No linked journal entry</option>',
+    ...entries.map((entry) => `<option value="${escapeHtml(entry.uuid)}"${entry.uuid === selectedUuid ? " selected" : ""}>${escapeHtml(entry.name)}</option>`)
+  ].join("");
+}
+
+async function openMapPinEditor(pin = null, coordinates = null) {
+  const { DialogV2 } = foundry.applications.api;
+  const draft = pin ?? {
+    title: "",
+    description: "",
+    type: "location",
+    x: coordinates?.x ?? 50,
+    y: coordinates?.y ?? 50,
+    journalUuid: ""
+  };
+  const formData = await DialogV2.input({
+    window: { title: pin ? `Edit map pin: ${pin.title}` : "Add a map pin" },
+    content: `<div class="lcj-map-pin-form">
+      <label><span>Pin title</span><input type="text" name="mapPinTitle" value="${escapeHtml(draft.title)}" placeholder="The place, person, or discovery" required autofocus></label>
+      <label><span>Icon</span><select name="mapPinType">${mapPinTypeOptions(draft.type)}</select></label>
+      <label><span>Information shown to players</span><textarea name="mapPinDescription" rows="6" placeholder="What the party knows about this marker">${escapeHtml(draft.description)}</textarea></label>
+      <label><span>Linked journal entry (optional)</span><select name="mapPinJournalUuid">${mapJournalOptions(draft.journalUuid)}</select></label>
+      <p><i class="fa-solid fa-circle-info"></i> Map pins are player-facing. Keep unrevealed GM secrets out of their descriptions.</p>
+    </div>`,
+    ok: { label: pin ? "Save pin" : "Place pin", icon: "fa-solid fa-map-pin" },
+    modal: true,
+    rejectClose: false
+  });
+  if (!formData) return null;
+  const title = formData.mapPinTitle?.trim();
+  if (!title) throw new Error("A map pin needs a title.");
+  return normalizeMapPin({
+    id: pin?.id ?? newMapPinId(),
+    title,
+    description: formData.mapPinDescription ?? "",
+    type: formData.mapPinType,
+    x: pin?.x ?? draft.x,
+    y: pin?.y ?? draft.y,
+    journalUuid: formData.mapPinJournalUuid ?? ""
+  });
+}
+
+async function saveMapPins(pins) {
+  if (!game.user.isGM) throw new Error("Only a GM can change map pins.");
+  const normalized = pins.map(normalizeMapPin).filter(Boolean);
+  await game.settings.set(MODULE_ID, "mapPins", { schemaVersion: 1, pins: normalized });
+  return normalized;
 }
 
 function hashSource(value) {
@@ -667,6 +775,15 @@ class LivingCampaignJournalApp extends HandlebarsApplicationMixin(ApplicationV2)
       selectQuest: this._onSelectQuest,
       joinPersonalQuest: this._onJoinPersonalQuest,
       importDossiers: this._onImportDossiers,
+      addMapPin: this._onAddMapPin,
+      openMapPin: this._onOpenMapPin,
+      editMapPin: this._onEditMapPin,
+      moveMapPin: this._onMoveMapPin,
+      deleteMapPin: this._onDeleteMapPin,
+      openMapJournal: this._onOpenMapJournal,
+      mapZoomIn: this._onMapZoomIn,
+      mapZoomOut: this._onMapZoomOut,
+      mapReset: this._onMapReset,
       changeTab: this._onChangeTab
     }
   };
@@ -676,6 +793,10 @@ class LivingCampaignJournalApp extends HandlebarsApplicationMixin(ApplicationV2)
   };
 
   activeTab = "quests";
+  mapView = { scale: 1, x: 0, y: 0 };
+  mapPlacement = null;
+  selectedMapPinId = null;
+  mapPinsById = new Map();
 
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
@@ -710,8 +831,11 @@ class LivingCampaignJournalApp extends HandlebarsApplicationMixin(ApplicationV2)
       .filter((entry) => flag(entry, "privateDossier") === true && entry.visible)
       .map(privateDossierView)
       .sort((left, right) => left.characterName.localeCompare(right.characterName));
+    const mapPins = currentMapPins().map(mapPinView);
+    this.mapPinsById = new Map(mapPins.map((pin) => [pin.id, pin]));
     const tabs = [
       { id: "quests", label: "Quest Ledger", icon: "fa-solid fa-scroll", count: quests.length },
+      { id: "map", label: "World Map", icon: "fa-solid fa-map-location-dot", count: mapPins.length },
       { id: "lore", label: "Lore", icon: "fa-solid fa-book-open", count: lore.length },
       { id: "history", label: "History", icon: "fa-solid fa-timeline", count: history.length }
     ];
@@ -736,10 +860,17 @@ class LivingCampaignJournalApp extends HandlebarsApplicationMixin(ApplicationV2)
       hasPlayerChoice: Boolean(playerChoice),
       joinedPersonal,
       hasJoinedPersonal: joinedPersonal.length > 0,
+      mapImagePath: WORLD_MAP_PATH,
+      mapPins,
+      hasMapPins: mapPins.length > 0,
       lore,
       history,
       privateDossiers,
       hasPrivateDossiers: privateDossiers.length > 0,
+      questsActive: this.activeTab === "quests",
+      mapActive: this.activeTab === "map",
+      loreActive: this.activeTab === "lore",
+      historyActive: this.activeTab === "history",
       storyActive: this.activeTab === "story",
       canManage: game.user.isGM,
       lastSyncLabel: lastSync ? new Date(lastSync).toLocaleString() : "Never"
@@ -750,12 +881,131 @@ class LivingCampaignJournalApp extends HandlebarsApplicationMixin(ApplicationV2)
     super._onRender(context, options);
     const search = this.element.querySelector("[data-lcj-search]");
     search?.addEventListener("input", () => this._filterCards(search.value));
+    this._bindMapInteractions();
+    this._applyMapTransform();
+    if (this.selectedMapPinId && this.mapPinsById.has(this.selectedMapPinId)) {
+      this._showMapPin(this.selectedMapPinId);
+    }
   }
 
   _filterCards(query) {
     const needle = query.trim().toLocaleLowerCase();
     for (const card of this.element.querySelectorAll("[data-lcj-card]")) {
       card.hidden = Boolean(needle) && !card.textContent.toLocaleLowerCase().includes(needle);
+    }
+  }
+
+  _applyMapTransform() {
+    const canvas = this.element?.querySelector("[data-lcj-map-canvas]");
+    if (!canvas) return;
+    const { scale, x, y } = this.mapView;
+    canvas.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+    const label = this.element.querySelector("[data-lcj-map-zoom-label]");
+    if (label) label.textContent = `${Math.round(scale * 100)}%`;
+  }
+
+  _setMapScale(nextScale) {
+    this.mapView.scale = clamp(nextScale, 1, 3.5);
+    if (this.mapView.scale === 1) {
+      this.mapView.x = 0;
+      this.mapView.y = 0;
+    }
+    this._applyMapTransform();
+  }
+
+  _setMapPlacementStatus(message = "") {
+    const stage = this.element?.querySelector("[data-lcj-map-viewport]");
+    const status = this.element?.querySelector("[data-lcj-map-status]");
+    stage?.classList.toggle("is-placing", Boolean(message));
+    if (status) {
+      status.hidden = !message;
+      status.textContent = message;
+    }
+  }
+
+  _armMapPlacement(mode, pinId = null) {
+    this.mapPlacement = { mode, pinId };
+    this._setMapPlacementStatus(mode === "move" ? "Click the map to move this pin." : "Click the map where the new pin belongs.");
+  }
+
+  _bindMapInteractions() {
+    const viewport = this.element?.querySelector("[data-lcj-map-viewport]");
+    const canvas = this.element?.querySelector("[data-lcj-map-canvas]");
+    if (!viewport || !canvas) return;
+
+    let drag = null;
+    viewport.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || this.mapPlacement || event.target.closest("[data-lcj-map-pin]")) return;
+      drag = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, mapX: this.mapView.x, mapY: this.mapView.y };
+      viewport.setPointerCapture?.(event.pointerId);
+      viewport.classList.add("is-panning");
+    });
+    viewport.addEventListener("pointermove", (event) => {
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      this.mapView.x = drag.mapX + event.clientX - drag.startX;
+      this.mapView.y = drag.mapY + event.clientY - drag.startY;
+      this._applyMapTransform();
+    });
+    const finishDrag = (event) => {
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      viewport.releasePointerCapture?.(event.pointerId);
+      viewport.classList.remove("is-panning");
+      drag = null;
+    };
+    viewport.addEventListener("pointerup", finishDrag);
+    viewport.addEventListener("pointercancel", finishDrag);
+    viewport.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      this._setMapScale(this.mapView.scale + (event.deltaY < 0 ? 0.2 : -0.2));
+    }, { passive: false });
+    viewport.addEventListener("click", async (event) => {
+      if (!this.mapPlacement || event.target.closest("[data-lcj-map-pin]")) return;
+      const rectangle = canvas.getBoundingClientRect();
+      const coordinates = {
+        x: clamp(((event.clientX - rectangle.left) / rectangle.width) * 100, 0, 100),
+        y: clamp(((event.clientY - rectangle.top) / rectangle.height) * 100, 0, 100)
+      };
+      const placement = this.mapPlacement;
+      this.mapPlacement = null;
+      this._setMapPlacementStatus();
+      try {
+        if (placement.mode === "move") {
+          const pin = this.mapPinsById.get(placement.pinId);
+          if (!pin) return;
+          const pins = currentMapPins().map((candidate) => candidate.id === pin.id ? { ...candidate, ...coordinates } : candidate);
+          await saveMapPins(pins);
+          this.selectedMapPinId = pin.id;
+          info(`Moved map pin “${pin.title}”.`);
+        } else {
+          const pin = await openMapPinEditor(null, coordinates);
+          if (!pin) return;
+          await saveMapPins([...currentMapPins(), pin]);
+          this.selectedMapPinId = pin.id;
+          info(`Added map pin “${pin.title}”.`);
+        }
+        await this.render();
+      } catch (exception) {
+        error(exception.message);
+      }
+    });
+  }
+
+  _showMapPin(pinId) {
+    const pin = this.mapPinsById.get(pinId);
+    const panel = this.element?.querySelector("[data-lcj-map-detail]");
+    if (!pin || !panel) return;
+    this.selectedMapPinId = pinId;
+    panel.hidden = false;
+    panel.querySelector("[data-lcj-map-detail-icon]").className = pin.iconClass;
+    panel.querySelector("[data-lcj-map-detail-icon]").style.color = pin.color;
+    panel.querySelector("[data-lcj-map-detail-type]").textContent = pin.typeLabel;
+    panel.querySelector("[data-lcj-map-detail-title]").textContent = pin.title;
+    panel.querySelector("[data-lcj-map-detail-description]").textContent = pin.description || "No additional information has been recorded yet.";
+    for (const button of panel.querySelectorAll("[data-pin-id]")) button.dataset.pinId = pin.id;
+    const linkedButton = panel.querySelector("[data-lcj-map-linked]");
+    if (linkedButton) linkedButton.hidden = !pin.hasJournalLink;
+    for (const marker of this.element.querySelectorAll("[data-lcj-map-pin]")) {
+      marker.classList.toggle("is-selected", marker.dataset.pinId === pin.id);
     }
   }
 
@@ -819,6 +1069,87 @@ class LivingCampaignJournalApp extends HandlebarsApplicationMixin(ApplicationV2)
     }
   }
 
+  static _onAddMapPin() {
+    if (!game.user.isGM) return;
+    this._armMapPlacement("add");
+  }
+
+  static _onOpenMapPin(_event, target) {
+    this._showMapPin(target.dataset.pinId);
+  }
+
+  static async _onEditMapPin(_event, target) {
+    if (!game.user.isGM) return;
+    const pin = this.mapPinsById.get(target.dataset.pinId);
+    if (!pin) return;
+    try {
+      const updated = await openMapPinEditor(pin);
+      if (!updated) return;
+      const pins = currentMapPins().map((candidate) => candidate.id === pin.id ? updated : candidate);
+      await saveMapPins(pins);
+      this.selectedMapPinId = pin.id;
+      await this.render();
+      info(`Updated map pin “${updated.title}”.`);
+    } catch (exception) {
+      error(exception.message);
+    }
+  }
+
+  static _onMoveMapPin(_event, target) {
+    if (!game.user.isGM || !this.mapPinsById.has(target.dataset.pinId)) return;
+    this._armMapPlacement("move", target.dataset.pinId);
+  }
+
+  static async _onDeleteMapPin(_event, target) {
+    if (!game.user.isGM) return;
+    const pin = this.mapPinsById.get(target.dataset.pinId);
+    if (!pin) return;
+    const { DialogV2 } = foundry.applications.api;
+    const confirmed = await DialogV2.confirm({
+      window: { title: `Delete map pin: ${pin.title}` },
+      content: `<p>Remove <strong>${escapeHtml(pin.title)}</strong> from the world map?</p>`,
+      yes: { label: "Delete pin", icon: "fa-solid fa-trash" },
+      no: { label: "Keep pin" },
+      modal: true
+    });
+    if (!confirmed) return;
+    try {
+      await saveMapPins(currentMapPins().filter((candidate) => candidate.id !== pin.id));
+      this.selectedMapPinId = null;
+      await this.render();
+      info(`Removed map pin “${pin.title}”.`);
+    } catch (exception) {
+      error(exception.message);
+    }
+  }
+
+  static async _onOpenMapJournal(_event, target) {
+    const pin = this.mapPinsById.get(target.dataset.pinId);
+    if (!pin?.journalUuid) return;
+    const document = await fromUuid(pin.journalUuid);
+    const entry = document?.documentName === "JournalEntryPage" ? document.parent : document;
+    if (!entry?.sheet) {
+      warn(`The journal linked to “${pin.title}” is no longer available.`);
+      return;
+    }
+    openJournalEntry(entry);
+  }
+
+  static _onMapZoomIn() {
+    this._setMapScale(this.mapView.scale + 0.25);
+  }
+
+  static _onMapZoomOut() {
+    this._setMapScale(this.mapView.scale - 0.25);
+  }
+
+  static _onMapReset() {
+    this.mapView = { scale: 1, x: 0, y: 0 };
+    this.mapPlacement = null;
+    this._setMapPlacementStatus();
+    this._applyMapTransform();
+  }
+
   static _onChangeTab(_event, target) {
     this.activeTab = target.dataset.tab;
     for (const tab of this.element.querySelectorAll("[data-lcj-tab]")) {
@@ -828,6 +1159,7 @@ class LivingCampaignJournalApp extends HandlebarsApplicationMixin(ApplicationV2)
     for (const panel of this.element.querySelectorAll("[data-lcj-panel]")) {
       panel.hidden = panel.dataset.lcjPanel !== this.activeTab;
     }
+    if (this.activeTab === "map") requestAnimationFrame(() => this._applyMapTransform());
   }
 }
 
@@ -901,10 +1233,23 @@ Hooks.once("init", () => {
     type: String,
     default: ""
   });
+  game.settings.register(MODULE_ID, "mapPins", {
+    scope: "world",
+    config: false,
+    restricted: true,
+    type: Object,
+    default: { schemaVersion: 1, pins: [] }
+  });
 });
 
 Hooks.once("ready", async () => {
-  const api = { open: openCampaignJournal, sync: syncLibrary, importDossiers: importPrivateDossiers };
+  const api = {
+    open: openCampaignJournal,
+    sync: syncLibrary,
+    importDossiers: importPrivateDossiers,
+    getMapPins: () => foundry.utils.deepClone(currentMapPins()),
+    setMapPins: saveMapPins
+  };
   game.modules.get(MODULE_ID).api = api;
   game.socket.on(SOCKET_CHANNEL, handleQuestAction);
 
@@ -923,4 +1268,7 @@ Hooks.on("updateJournalEntry", (entry) => {
 });
 Hooks.on("deleteJournalEntry", (entry) => {
   if (flag(entry, "managed") && journalApp?.rendered) journalApp.render();
+});
+Hooks.on("updateSetting", (setting) => {
+  if (setting.key === `${MODULE_ID}.mapPins` && journalApp?.rendered) journalApp.render();
 });
