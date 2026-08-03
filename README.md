@@ -1,6 +1,6 @@
 # Living Campaign Journal
 
-Living Campaign Journal is a system-agnostic Foundry VTT module for a shared quest ledger, lore library, and campaign history. Its source of truth is one readable JSON file, so campaign updates can be authored with Codex and synchronized into Foundry without recreating Journal Entries by hand.
+Living Campaign Journal is a system-agnostic Foundry VTT module for a shared quest ledger, interactive world map, lore library, and campaign history. Its source of truth is one readable JSON file, so campaign updates can be authored with Codex and synchronized into Foundry without recreating Journal Entries by hand.
 
 The current interface is styled for **The Grand Blooming**, a Belle Époque-inspired chapter of **The Blue Butterfly Cycle**, using clear layered blues, restrained antique gold, floral Art Nouveau details, and readable card-based layouts.
 
@@ -24,6 +24,9 @@ The interface uses a clear layered-blue foundation, luminous cornflower interact
 
 - Creates real Foundry Journal Entries under `Campaign Journal/Quests`, `Campaign Journal/Lore`, and `Campaign Journal/History`.
 - Provides a searchable campaign dashboard from the Journal sidebar.
+- Presents the complete world map in an interactive pan-and-zoom viewer.
+- Lets the GM place shared map markers for places, quests, lore, dangers, people, and mysteries.
+- Lets a marker display player-facing information and optionally open a linked campaign Journal Entry.
 - Gives each player one vote for the regular quest they want the party to pursue next.
 - Highlights newly posted quests separately from older available choices.
 - Supports personal quests with an owner and a public join/leave roster so every ally can participate.
@@ -54,6 +57,19 @@ The **Quest Ledger** tab is the party's decision space:
 - **In Progress** and **Closed Chapters** keep the ledger connected to the campaign's ongoing record.
 
 Player choices are sent through Foundry's module socket to the active GM, validated against Journal visibility, written to the quest's progress flags, and then synchronized to all connected players.
+
+## Interactive world map
+
+The **World Map** tab contains the full-resolution campaign map without modifying the underlying artwork. Drag the map to pan, use the mouse wheel or map controls to zoom, and select any marker to open its information card.
+
+Map markers are stored as Foundry world data and automatically synchronize to connected players. Only GMs can change them:
+
+1. Select **Add a pin**.
+2. Click the desired position on the map.
+3. Give the marker a title, choose an icon, and write the information players should see.
+4. Optionally link the marker to an imported quest, lore, or history Journal Entry.
+
+Existing markers can be edited, moved to a new position, or deleted from their information card. Marker descriptions are player-facing; do not put unrevealed GM secrets in them.
 
 ## Private player dossiers
 
@@ -129,6 +145,8 @@ For macros or another module:
 ```js
 game.modules.get("living-campaign-journal").api.open();
 await game.modules.get("living-campaign-journal").api.sync();
+const pins = game.modules.get("living-campaign-journal").api.getMapPins();
+await game.modules.get("living-campaign-journal").api.setMapPins(pins);
 ```
 
 Hold Shift while clicking **Sync now** to refresh every managed Journal Entry. A forced refresh still preserves progress unless that entry has `resetProgress: true`.

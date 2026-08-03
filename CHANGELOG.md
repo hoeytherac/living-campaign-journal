@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.0
+
+- Added the full-resolution Kaeltharion world map as a dedicated **World Map** journal tab.
+- Added smooth map panning, wheel/button zoom, reset controls, and a responsive map workspace.
+- Added persistent GM-managed markers for places, quests, lore, dangers, people, and mysteries.
+- Added marker information cards, optional links to managed Journal Entries, and GM controls to add, edit, move, or delete markers.
+- Stored markers as world data so every connected player sees the same map annotations.
+- Renamed the script and stylesheet for this feature release so Foundry cannot reuse cached v0.5 files.
+
 ## 0.5.1
 
 - Renamed the Grand Blooming script and stylesheet so Foundry loads the redesigned blue theme and quest-ledger labels instead of reusing cached legacy files.
