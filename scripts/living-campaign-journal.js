@@ -344,7 +344,7 @@ function detailRows(source) {
   if (source.quest?.giver) rows.push(["Quest giver", source.quest.giver]);
   if (source.quest?.location) rows.push(["Location", source.quest.location]);
   if (source.quest?.rewards) rows.push(["Rewards", source.quest.rewards]);
-  if (source.quest?.rank) rows.push(["Guild rank", source.quest.rank]);
+  if (source.quest?.rank) rows.push(["Standing", source.quest.rank]);
   if (source.quest?.scope === "personal" && source.quest?.owner) rows.push(["Personal quest for", source.quest.owner]);
   if (source.history?.date) rows.push(["Date", source.history.date]);
   if (source.lore?.category) rows.push(["Category", source.lore.category]);
@@ -692,11 +692,11 @@ class LivingCampaignJournalApp extends HandlebarsApplicationMixin(ApplicationV2)
     const activeQuests = quests.filter((entry) => !entry.personal && entry.statusId === "active").sort((left, right) => left.title.localeCompare(right.title));
     const resolvedQuests = quests.filter((entry) => ["completed", "failed"].includes(entry.statusId)).sort((left, right) => left.title.localeCompare(right.title));
     const questSections = [
-      { id: "new", label: "New Postings", subtitle: "Fresh notices from the guild desk", icon: "fa-solid fa-sparkles", quests: newQuests },
-      { id: "choices", label: "Choose the Next Adventure", subtitle: "Vote for where the party should go", icon: "fa-solid fa-map-location-dot", quests: availableQuests },
-      { id: "personal", label: "Personal Quests", subtitle: "One hero's story, open to every ally", icon: "fa-solid fa-star", quests: personalQuests },
-      { id: "active", label: "Current Adventures", subtitle: "Quests already underway", icon: "fa-solid fa-compass", quests: activeQuests },
-      { id: "resolved", label: "Completed & Failed", subtitle: "The guild remembers every outcome", icon: "fa-solid fa-bookmark", quests: resolvedQuests }
+      { id: "new", label: "New Invitations", subtitle: "Fresh engagements and calls for aid", icon: "fa-solid fa-sparkles", quests: newQuests },
+      { id: "choices", label: "Open Engagements", subtitle: "Choose where the party should go next", icon: "fa-solid fa-map-location-dot", quests: availableQuests },
+      { id: "personal", label: "Personal Promises", subtitle: "One hero's promise, open to every companion", icon: "fa-solid fa-star", quests: personalQuests },
+      { id: "active", label: "In Progress", subtitle: "Journeys already underway", icon: "fa-solid fa-compass", quests: activeQuests },
+      { id: "resolved", label: "Closed Chapters", subtitle: "Every promise leaves a record", icon: "fa-solid fa-bookmark", quests: resolvedQuests }
     ].map((section) => ({ ...section, hasQuests: section.quests.length > 0 }));
     const playerChoice = quests.find((entry) => entry.hasSelected && entry.statusId === "available");
     const joinedPersonal = personalQuests.filter((entry) => entry.hasJoined);
@@ -711,7 +711,7 @@ class LivingCampaignJournalApp extends HandlebarsApplicationMixin(ApplicationV2)
       .map(privateDossierView)
       .sort((left, right) => left.characterName.localeCompare(right.characterName));
     const tabs = [
-      { id: "quests", label: "Quest Board", icon: "fa-solid fa-scroll", count: quests.length },
+      { id: "quests", label: "Quest Ledger", icon: "fa-solid fa-scroll", count: quests.length },
       { id: "lore", label: "Lore", icon: "fa-solid fa-book-open", count: lore.length },
       { id: "history", label: "History", icon: "fa-solid fa-timeline", count: history.length }
     ];
