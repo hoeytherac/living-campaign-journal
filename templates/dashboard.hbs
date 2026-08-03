@@ -1,0 +1,249 @@
+<section class="lcj-shell">
+  <header class="lcj-hero">
+    <div class="lcj-hero-copy">
+      <span class="lcj-kicker">Living Campaign Archive</span>
+      <h1>{{campaignTitle}}</h1>
+      <p>{{campaignSubtitle}}</p>
+    </div>
+    <div class="lcj-tools">
+      <label class="lcj-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" data-lcj-search placeholder="Search the archive…" aria-label="Search the campaign journal">
+      </label>
+      {{#if canManage}}
+        <button type="button" class="lcj-icon-button" data-action="importDossiers" title="Paste and import private player dossiers">
+          <i class="fa-solid fa-user-shield"></i>
+          <span>Private dossiers</span>
+        </button>
+        <button type="button" class="lcj-icon-button" data-action="sync" title="Sync campaign JSON. Hold Shift to force a full refresh.">
+          <i class="fa-solid fa-arrows-rotate"></i>
+          <span>Sync now</span>
+        </button>
+      {{else}}
+        <button type="button" class="lcj-icon-button" data-action="refresh" title="Refresh">
+          <i class="fa-solid fa-rotate"></i>
+          <span>Refresh</span>
+        </button>
+      {{/if}}
+    </div>
+  </header>
+
+  <nav class="lcj-tabs" aria-label="Campaign journal sections">
+    {{#each tabs}}
+      <button type="button" data-action="changeTab" data-lcj-tab data-tab="{{id}}" class="{{#if active}}active{{/if}}" aria-selected="{{active}}">
+        <i class="{{icon}}"></i>
+        <span>{{label}}</span>
+        <span class="lcj-count">{{count}}</span>
+      </button>
+    {{/each}}
+  </nav>
+
+  <main class="lcj-content">
+    <section class="lcj-panel" data-lcj-panel="quests" {{#unless tabs.0.active}}hidden{{/unless}}>
+      <div class="lcj-board-frame">
+        <div class="lcj-board-inner">
+          <div class="lcj-board-title">
+            <span class="lcj-eyebrow">Guild notices & adventurer requests</span>
+            <h2>Butterfly Guild Quest Board</h2>
+            <p>Read the postings, choose the party's next destination, or join an ally's personal story.</p>
+          </div>
+
+          <aside class="lcj-choice-summary">
+            <div class="lcj-choice-main">
+              <i class="fa-solid fa-map"></i>
+              <div>
+                <span>Your next-adventure vote</span>
+                {{#if hasPlayerChoice}}
+                  <button type="button" data-action="openJournal" data-entry-id="{{playerChoice.entryId}}">{{playerChoice.title}} <small>{{playerChoice.location}}</small></button>
+                {{else}}
+                  <strong>No quest chosen yet</strong>
+                {{/if}}
+              </div>
+            </div>
+            {{#if hasJoinedPersonal}}
+              <div class="lcj-joined-summary">
+                <span><i class="fa-solid fa-people-group"></i> Personal quests joined</span>
+                {{#each joinedPersonal}}
+                  <button type="button" data-action="openJournal" data-entry-id="{{entryId}}">{{title}}</button>
+                {{/each}}
+              </div>
+            {{/if}}
+          </aside>
+
+          {{#each questSections}}
+            {{#if hasQuests}}
+              <section class="lcj-board-section lcj-board-section-{{id}}">
+                <header class="lcj-board-section-header">
+                  <i class="{{icon}}"></i>
+                  <div><h3>{{label}}</h3><p>{{subtitle}}</p></div>
+                  <span>{{quests.length}}</span>
+                </header>
+                <div class="lcj-card-grid lcj-quest-grid">
+                  {{#each quests}}
+                    <article class="lcj-card lcj-quest-card status-{{statusId}} {{#if personal}}is-personal{{/if}} {{#if hasSelected}}is-selected{{/if}}" data-lcj-card>
+                      <div class="lcj-quest-pin" aria-hidden="true"></div>
+                      <div class="lcj-card-topline">
+                        {{#if isNew}}<span class="lcj-new-badge"><i class="fa-solid fa-sparkles"></i> New</span>{{/if}}
+                        {{#if personal}}<span class="lcj-personal-badge"><i class="fa-solid fa-star"></i> Personal</span>{{/if}}
+                        {{#if rank}}<span class="lcj-rank">Rank {{rank}}</span>{{/if}}
+                        {{#if ../../canManage}}
+                          <button type="button" class="lcj-status" data-action="cycleStatus" data-entry-id="{{entryId}}" title="Advance quest status">{{statusLabel}}</button>
+                        {{else}}
+                          <span class="lcj-status">{{statusLabel}}</span>
+                        {{/if}}
+                        {{#if gmOnly}}<span class="lcj-gm-badge"><i class="fa-solid fa-eye-slash"></i> GM</span>{{/if}}
+                        {{#if objectiveProgress}}<span class="lcj-progress">{{objectiveProgress}}</span>{{/if}}
+                      </div>
+                      <button type="button" class="lcj-card-title" data-action="openJournal" data-entry-id="{{entryId}}">{{title}}</button>
+                      {{#if owner}}<div class="lcj-personal-owner"><i class="fa-solid fa-crown"></i> A personal quest for <strong>{{owner}}</strong></div>{{/if}}
+                      <p>{{summary}}</p>
+                      {{#if giver}}<div class="lcj-detail"><i class="fa-solid fa-user"></i><span>{{giver}}</span></div>{{/if}}
+                      {{#if location}}<div class="lcj-detail"><i class="fa-solid fa-location-dot"></i><span>{{location}}</span></div>{{/if}}
+                      {{#if postedAt}}<div class="lcj-detail"><i class="fa-regular fa-clock"></i><span>Posted {{postedAt}}</span></div>{{/if}}
+
+                      {{#if selectedUsers.length}}
+                        <div class="lcj-adventurers">
+                          <span>Party votes</span>
+                          <div>{{#each selectedUsers}}<span class="lcj-adventurer" title="{{name}}">{{initial}}</span>{{/each}}</div>
+                        </div>
+                      {{/if}}
+                      {{#if participants.length}}
+                        <div class="lcj-adventurers">
+                          <span>Joined adventurers</span>
+                          <div>{{#each participants}}<span class="lcj-adventurer" title="{{name}}">{{initial}}</span>{{/each}}</div>
+                        </div>
+                      {{/if}}
+
+                      {{#if objectives.length}}
+                        <ul class="lcj-objectives">
+                          {{#each objectives}}
+                            <li>
+                              {{#if ../../../canManage}}
+                                <button type="button" data-action="toggleObjective" data-entry-id="{{../entryId}}" data-objective-id="{{id}}" aria-pressed="{{complete}}" class="{{#if complete}}complete{{/if}}">
+                                  <i class="{{#if complete}}fa-solid fa-square-check{{else}}fa-regular fa-square{{/if}}"></i>
+                                  <span>{{text}}</span>
+                                </button>
+                              {{else}}
+                                <span class="{{#if complete}}complete{{/if}}"><i class="{{#if complete}}fa-solid fa-square-check{{else}}fa-regular fa-square{{/if}}"></i> {{text}}</span>
+                              {{/if}}
+                            </li>
+                          {{/each}}
+                        </ul>
+                      {{/if}}
+                      {{#if rewards}}<div class="lcj-reward"><i class="fa-solid fa-gem"></i><span>{{rewards}}</span></div>{{/if}}
+                      {{#if tags.length}}<div class="lcj-tags">{{#each tags}}<span>{{this}}</span>{{/each}}</div>{{/if}}
+
+                      <div class="lcj-board-actions">
+                        {{#if canVote}}
+                          <button type="button" class="lcj-choice-button {{#if hasSelected}}selected{{/if}}" data-action="selectQuest" data-entry-id="{{entryId}}">
+                            <i class="{{#if hasSelected}}fa-solid fa-map-location-dot{{else}}fa-regular fa-map{{/if}}"></i> {{voteLabel}}
+                          </button>
+                        {{/if}}
+                        {{#if canJoin}}
+                          <button type="button" class="lcj-join-button {{#if hasJoined}}joined{{/if}}" data-action="joinPersonalQuest" data-entry-id="{{entryId}}">
+                            <i class="{{#if hasJoined}}fa-solid fa-user-check{{else}}fa-solid fa-user-plus{{/if}}"></i> {{joinLabel}}
+                          </button>
+                        {{/if}}
+                        <button type="button" class="lcj-details-button" data-action="openJournal" data-entry-id="{{entryId}}"><i class="fa-solid fa-book-open"></i> Details</button>
+                      </div>
+                    </article>
+                  {{/each}}
+                </div>
+              </section>
+            {{/if}}
+          {{/each}}
+          {{#unless quests.length}}<div class="lcj-empty"><i class="fa-solid fa-scroll"></i><p>The guild board has no visible postings yet.</p></div>{{/unless}}
+        </div>
+      </div>
+    </section>
+
+    <section class="lcj-panel" data-lcj-panel="lore" {{#unless tabs.1.active}}hidden{{/unless}}>
+      <div class="lcj-section-heading">
+        <div>
+          <span class="lcj-eyebrow">What the party has learned</span>
+          <h2>Lore Library</h2>
+        </div>
+      </div>
+      <div class="lcj-card-grid">
+        {{#each lore}}
+          <article class="lcj-card lcj-lore-card" data-lcj-card>
+            <div class="lcj-card-topline">
+              <span class="lcj-category">{{loreCategory}}</span>
+              {{#if gmOnly}}<span class="lcj-gm-badge"><i class="fa-solid fa-eye-slash"></i> GM</span>{{/if}}
+            </div>
+            <button type="button" class="lcj-card-title" data-action="openJournal" data-entry-id="{{entryId}}">{{title}}</button>
+            <p>{{summary}}</p>
+            {{#if tags.length}}<div class="lcj-tags">{{#each tags}}<span>{{this}}</span>{{/each}}</div>{{/if}}
+          </article>
+        {{/each}}
+        {{#unless lore.length}}<div class="lcj-empty"><i class="fa-solid fa-book-open"></i><p>No visible lore yet.</p></div>{{/unless}}
+      </div>
+    </section>
+
+    <section class="lcj-panel" data-lcj-panel="history" {{#unless tabs.2.active}}hidden{{/unless}}>
+      <div class="lcj-section-heading">
+        <div>
+          <span class="lcj-eyebrow">The story so far</span>
+          <h2>Campaign History</h2>
+        </div>
+      </div>
+      <ol class="lcj-timeline">
+        {{#each history}}
+          <li data-lcj-card>
+            <div class="lcj-timeline-mark"></div>
+            <article class="lcj-card lcj-history-card">
+              <div class="lcj-card-topline">
+                <time>{{date}}</time>
+                {{#if gmOnly}}<span class="lcj-gm-badge"><i class="fa-solid fa-eye-slash"></i> GM</span>{{/if}}
+              </div>
+              <button type="button" class="lcj-card-title" data-action="openJournal" data-entry-id="{{entryId}}">{{title}}</button>
+              <p>{{summary}}</p>
+              {{#if tags.length}}<div class="lcj-tags">{{#each tags}}<span>{{this}}</span>{{/each}}</div>{{/if}}
+            </article>
+          </li>
+        {{/each}}
+        {{#unless history.length}}<li class="lcj-empty"><i class="fa-solid fa-timeline"></i><p>No visible history yet.</p></li>{{/unless}}
+      </ol>
+    </section>
+
+    {{#if hasPrivateDossiers}}
+      <section class="lcj-panel lcj-story-panel" data-lcj-panel="story" {{#unless storyActive}}hidden{{/unless}}>
+        <div class="lcj-story-vault">
+          <div class="lcj-section-heading">
+            <div>
+              <span class="lcj-eyebrow">Sealed beneath a butterfly sigil</span>
+              <h2>{{#if canManage}}Private Player Dossiers{{else}}My Story{{/if}}</h2>
+            </div>
+            {{#if canManage}}
+              <button type="button" class="lcj-vault-import" data-action="importDossiers"><i class="fa-solid fa-file-import"></i> Import dossiers</button>
+            {{/if}}
+          </div>
+          <p class="lcj-story-intro">Backstories, private knowledge, and personal notes are visible only to their player and the GM.</p>
+          <div class="lcj-dossier-grid">
+            {{#each privateDossiers}}
+              <article class="lcj-dossier-card" data-lcj-card>
+                <div class="lcj-dossier-seal"><i class="fa-solid fa-shield-halved"></i></div>
+                <span class="lcj-private-label"><i class="fa-solid fa-lock"></i> Private Chronicle</span>
+                <h3>{{characterName}}</h3>
+                <span class="lcj-dossier-player">Player: {{playerName}}</span>
+                <p>{{backstoryPreview}}</p>
+                <div class="lcj-dossier-stats">
+                  <span><i class="fa-solid fa-book-open"></i> {{pageCount}} pages</span>
+                  <span><i class="fa-solid fa-lightbulb"></i> {{knowledgeCount}} known secrets</span>
+                </div>
+                <button type="button" class="lcj-open-dossier" data-action="openJournal" data-entry-id="{{entryId}}">
+                  <i class="fa-solid fa-feather-pointed"></i> Open {{#if isMine}}my journal{{else}}dossier{{/if}}
+                </button>
+              </article>
+            {{/each}}
+          </div>
+        </div>
+      </section>
+    {{/if}}
+  </main>
+
+  <footer class="lcj-footer">
+    <span><i class="fa-solid fa-circle-nodes"></i> Synced journals update for everyone</span>
+    {{#if canManage}}<span>Last check: {{lastSyncLabel}}</span>{{/if}}
+  </footer>
+</section>
