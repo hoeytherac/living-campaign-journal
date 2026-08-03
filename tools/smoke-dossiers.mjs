@@ -7,7 +7,9 @@ const makeId = (prefix) => `${prefix}-${nextId++}`;
 const player = { id: "player-1", uuid: "User.player-1", documentName: "User", name: "Player One", isGM: false, character: { id: "actor-1", name: "Aurelia" } };
 const playerTwo = { id: "player-2", uuid: "User.player-2", documentName: "User", name: "Player Two", isGM: false, character: { id: "actor-2", name: "Caelum" } };
 const gm = { id: "gm-1", uuid: "User.gm-1", name: "Game Master", isGM: true };
+const actorOne = { id: "actor-1", uuid: "Actor.actor-1", documentName: "Actor", name: "Aurelia", testUserPermission: (user) => user.id === player.id };
 const actorTwo = { id: "actor-2", uuid: "Actor.actor-2", documentName: "Actor", name: "Caelum", testUserPermission: () => false };
+const actorSibling = { id: "actor-3", uuid: "Actor.actor-3", documentName: "Actor", name: "Thalia", testUserPermission: (user) => user.id === player.id };
 const users = Object.assign(new Map([[player.id, player], [playerTwo.id, playerTwo], [gm.id, gm]]), {
   activeGM: gm,
   find: (predicate) => [...users.values()].find(predicate)
@@ -75,7 +77,7 @@ globalThis.foundry = {
   applications: { api: { ApplicationV2: class {}, HandlebarsApplicationMixin: (Base) => class extends Base {} } },
   utils: {
     deepClone: structuredClone,
-    fromUuid: async (uuid) => uuid === player.uuid ? player : uuid === actorTwo.uuid ? actorTwo : null
+    fromUuid: async (uuid) => uuid === player.uuid ? player : uuid === actorOne.uuid ? actorOne : uuid === actorTwo.uuid ? actorTwo : uuid === actorSibling.uuid ? actorSibling : null
   }
 };
 globalThis.Hooks = { once: (name, callback) => onceHooks.set(name, callback), on: () => {} };
@@ -114,7 +116,7 @@ await onceHooks.get("ready")();
 game.user = gm;
 
 const dossier = {
-  playerUuid: player.uuid,
+  playerUuid: actorOne.uuid,
   characterName: "Aurelia",
   backstory: { body: "<p>A private origin.</p>" },
   knowledge: [{ id: "moon-sigil", title: "The Moon Sigil", body: "<p>A private fact.</p>" }]
@@ -136,9 +138,38 @@ assert.equal(notes.text.content, "<p>Player-authored note.</p>");
 assert.match(journals[0].pages.contents.find((page) => page.getFlag("living-campaign-journal", "dossierPageKey") === "backstory").text.content, /Updated private origin/);
 
 await game.modules.get("living-campaign-journal").api.importDossiers({
-  dossiers: [{ playerUuid: actorTwo.uuid, characterName: "Caelum", backstory: { body: "<p>Actor-resolved origin.</p>" }, knowledge: [] }]
+  dossiers: [{ playerUuid: actorSibling.uuid, characterName: "Thalia", backstory: { body: "<p>A second private origin.</p>" }, knowledge: [] }]
 });
 assert.equal(journals.length, 2);
-assert.equal(journals[1].ownership[playerTwo.id], CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER);
+assert.equal(journals[0].getFlag("living-campaign-journal", "dossierCharacterName"), "Aurelia");
+assert.equal(journals[1].getFlag("living-campaign-journal", "dossierCharacterName"), "Thalia");
+assert.equal(journals[0].ownership[player.id], CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER);
+assert.equal(journals[1].ownership[player.id], CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER);
+assert.notEqual(journals[0].getFlag("living-campaign-journal", "dossierKey"), journals[1].getFlag("living-campaign-journal", "dossierKey"));
 
-console.log("Private dossier ownership, page creation, UUID resolution, and notes-preservation smoke test passed.");
+await game.modules.get("living-campaign-journal").api.importDossiers({
+  dossiers: [{ playerUuid: actorTwo.uuid, characterName: "Caelum", backstory: { body: "<p>Actor-resolved origin.</p>" }, knowledge: [] }]
+});
+assert.equal(journals.length, 3);
+assert.equal(journals[2].ownership[playerTwo.id], CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER);
+
+const unassignedDossier = {
+  dossierId: "nocturne-unassigned",
+  characterName: "Nocturne",
+  backstory: { body: "<p>An unassigned private origin.</p>" },
+  knowledge: []
+};
+await game.modules.get("living-campaign-journal").api.importDossiers({ dossiers: [unassignedDossier] });
+assert.equal(journals.length, 4);
+assert.equal(journals[3].ownership.default, CONST.DOCUMENT_OWNERSHIP_LEVELS.NONE);
+assert.equal(journals[3].ownership[player.id], undefined);
+
+journals[3].ownership[player.id] = CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER;
+await game.modules.get("living-campaign-journal").api.importDossiers({
+  dossiers: [{ ...unassignedDossier, revision: 2, backstory: { body: "<p>Updated after manual assignment.</p>" } }]
+});
+assert.equal(journals.length, 4);
+assert.equal(journals[3].ownership[player.id], CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER);
+assert.match(journals[3].pages.contents.find((page) => page.getFlag("living-campaign-journal", "dossierPageKey") === "backstory").text.content, /Updated after manual assignment/);
+
+console.log("Private dossier ownership, multiple-character separation, unassigned import, manual assignment preservation, page creation, UUID resolution, and notes-preservation smoke test passed.");

@@ -287,7 +287,10 @@ function validateDossierPackage(payload) {
 
   for (const [index, dossier] of dossiers.entries()) {
     if (!dossier || typeof dossier !== "object") throw new Error(`Dossier ${index + 1} must be an object.`);
-    if (!dossier.playerUuid || typeof dossier.playerUuid !== "string") throw new Error(`Dossier ${index + 1} needs playerUuid.`);
+    if (dossier.playerUuid !== undefined && typeof dossier.playerUuid !== "string") throw new Error(`playerUuid for dossier ${index + 1} must be a string.`);
+    if (dossier.dossierId !== undefined && (typeof dossier.dossierId !== "string" || !/^[a-z0-9][a-z0-9-]*$/.test(dossier.dossierId))) {
+      throw new Error(`dossierId for dossier ${index + 1} must use lowercase letters, numbers, and hyphens.`);
+    }
     if (!dossier.characterName) throw new Error(`Dossier ${index + 1} needs characterName.`);
     if (!dossier.backstory?.body) throw new Error(`Dossier for ${dossier.characterName} needs backstory.body.`);
     if (dossier.knowledge && !Array.isArray(dossier.knowledge)) throw new Error(`knowledge for ${dossier.characterName} must be an array.`);
@@ -322,6 +325,23 @@ async function resolveDossierUser(reference) {
   const owningPlayer = game.users.find((user) => !user.isGM && document.testUserPermission(user, CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER));
   if (owningPlayer) return owningPlayer;
   throw new Error(`Actor "${document.name}" is not assigned to a player User.`);
+}
+
+function dossierIdentity(dossier, user = null) {
+  const explicitId = String(dossier.dossierId ?? "").trim();
+  if (explicitId) return `dossier:${explicitId}`;
+
+  const reference = String(dossier.playerUuid ?? "").trim();
+  if (/^Actor\./i.test(reference) || /\.Actor\./i.test(reference)) return `actor:${reference}`;
+
+  const character = String(dossier.characterName ?? "character")
+    .trim()
+    .toLocaleLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/^-+|-+$/g, "");
+  return user
+    ? `user:${user.id}:character:${character || "unnamed"}`
+    : `character:${character || "unnamed"}`;
 }
 
 function dossierPageContent(dossier, kind, knowledgeItem = null) {
@@ -391,20 +411,38 @@ async function importPrivateDossiers(payload) {
   const results = [];
 
   for (const dossier of dossiers) {
-    const user = await resolveDossierUser(dossier.playerUuid);
-    const ownership = {
-      default: CONST.DOCUMENT_OWNERSHIP_LEVELS.NONE,
-      [user.id]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER
-    };
-    let entry = game.journal.find((candidate) => flag(candidate, "privateDossier") && flag(candidate, "dossierUserId") === user.id);
+    const playerReference = String(dossier.playerUuid ?? "").trim();
+    const user = playerReference ? await resolveDossierUser(playerReference) : null;
+    const dossierKey = dossierIdentity(dossier, user);
+    let entry = game.journal.find((candidate) =>
+      flag(candidate, "privateDossier")
+      && flag(candidate, "dossierKey") === dossierKey
+    );
+    if (!entry) {
+      const normalizedCharacterName = String(dossier.characterName).trim().toLocaleLowerCase();
+      entry = game.journal.find((candidate) =>
+        flag(candidate, "privateDossier")
+        && !flag(candidate, "dossierKey")
+        && (!user || flag(candidate, "dossierUserId") === user.id)
+        && String(flag(candidate, "dossierCharacterName") ?? "").trim().toLocaleLowerCase() === normalizedCharacterName
+      );
+    }
+    const ownership = entry
+      ? foundry.utils.deepClone(entry.ownership ?? {})
+      : { default: CONST.DOCUMENT_OWNERSHIP_LEVELS.NONE };
+    ownership.default = CONST.DOCUMENT_OWNERSHIP_LEVELS.NONE;
+    if (user) ownership[user.id] = CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER;
     const dossierFlags = {
       privateDossier: true,
-      dossierUserId: user.id,
-      dossierUserUuid: user.uuid,
+      dossierKey,
       dossierCharacterName: dossier.characterName,
       dossierRevision: String(dossier.revision ?? 1),
       dossierHash: hashSource(dossier)
     };
+    if (user) {
+      dossierFlags.dossierUserId = user.id;
+      dossierFlags.dossierUserUuid = user.uuid;
+    }
 
     if (!entry) {
       entry = await JournalEntry.create({
@@ -446,6 +484,7 @@ async function openDossierImporter() {
     window: { title: "Import Private Player Dossiers" },
     content: `<div class="lcj-dossier-import">
       <p>Paste a dossier package created with Codex. It may contain one dossier or a <code>dossiers</code> array.</p>
+      <p>A dossier may be imported without a User or Actor UUID. It will remain GM-only until you assign Journal ownership to a player.</p>
       <p><strong>Privacy:</strong> the pasted text is written directly into restricted Foundry Journals and is not added to the module's public campaign JSON.</p>
       <textarea name="dossierJson" rows="18" placeholder='{"schemaVersion":1,"dossiers":[...]}' autofocus></textarea>
     </div>`,
@@ -703,8 +742,12 @@ function userChips(userIds = []) {
 }
 
 function privateDossierView(entry) {
-  const userId = flag(entry, "dossierUserId");
-  const user = game.users.get(userId);
+  const flaggedUserId = flag(entry, "dossierUserId");
+  const ownershipLevel = CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER;
+  const user = game.users.get(flaggedUserId) ?? game.users.find((candidate) =>
+    !candidate.isGM && Number(entry.ownership?.[candidate.id] ?? 0) >= ownershipLevel
+  );
+  const userId = user?.id ?? null;
   const pages = entry.pages.contents;
   const backstory = pages.find((page) => flag(page, "dossierPageKey") === "backstory");
   const knowledgePages = pages.filter((page) => flag(page, "dossierPageKey")?.startsWith("knowledge:"));

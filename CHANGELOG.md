@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.3
+
+- Removed and explicitly retired the four unwanted demonstration quests again, leaving the First Steps festival and five campaign quest lines.
+- Fixed private dossier identity so different Actor UUIDs owned by the same Foundry user receive separate private Journals.
+- Added automatic migration for existing private Journals created before Actor-based dossier identity was available.
+- Kept dossier reimports additive: the matching Actor dossier updates in place, other character dossiers remain separate, and Personal Notes remain untouched.
+- Made User and Actor UUIDs optional so dossiers can be imported GM-only and assigned to players afterward without losing that ownership on reimport.
+
 ## 0.6.2
 
 - Restored the four earlier quests alongside the First Steps festival and five new destination quest lines.

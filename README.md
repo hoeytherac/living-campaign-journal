@@ -78,12 +78,12 @@ Private dossiers are deliberately separate from `content/campaign.json`. Module 
 
 The secure workflow is:
 
-1. Give Codex each player's Foundry User UUID and the backstory or ideas you want to develop. An Actor UUID also works if that Actor is assigned to the correct player.
+1. Give Codex the backstory or ideas you want to develop. A Foundry User or Actor UUID is optional; omit it when you prefer to assign the dossier after import.
 2. Codex creates a private dossier package as a separate local JSON deliverable.
 3. In Foundry, the GM opens the campaign journal and selects **Private dossiers**.
 4. Paste the package and select **Import dossiers**.
 
-Each player receives one private Foundry Journal owned only by that player. GMs can always see it. Everyone else receives no ownership permission. The importer creates or updates:
+Each imported character receives a private Foundry Journal. With a User or Actor UUID, it is immediately owned by that character's player. Without one, it remains GM-only until you assign Journal ownership in Foundry. The importer creates or updates:
 
 - **01 — Backstory**
 - **02 — What I Know**, an index of character-only information
@@ -92,7 +92,9 @@ Each player receives one private Foundry Journal owned only by that player. GMs 
 
 Reimporting a dossier updates its managed pages without deleting old pages or overwriting Personal Notes. A blank formatting example is provided at [`examples/private-dossier-template.json`](examples/private-dossier-template.json).
 
-The best identifier is a User UUID such as `User.abc123...`. You can get it by enabling Foundry's UUID display/copy tools or by using a simple console or macro expression such as `game.users.getName("Player Name").uuid`. Actor UUIDs such as `Actor.abc123...` are also accepted.
+Each dossier has its own stable `dossierId`, so multiple characters remain separate even before assignment. Reimporting the same dossier updates only that character and preserves ownership assigned after import. Actor UUIDs remain supported when you want the importer to assign ownership automatically.
+
+To assign later, right-click the imported private Journal in Foundry, open its ownership or permissions configuration, and give the correct player **Owner** access. User UUIDs such as `User.abc123...` and Actor UUIDs such as `Actor.abc123...` are still accepted for automatic assignment.
 
 ## The update loop
 

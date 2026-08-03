@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "dossiers": [
     {
-      "playerUuid": "User.REPLACE_WITH_USER_ID",
+      "dossierId": "character-name",
       "characterName": "Character Name",
       "title": "Character Name — Private Journal",
       "revision": 1,

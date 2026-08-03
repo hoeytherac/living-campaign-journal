@@ -22,7 +22,7 @@ if (!Array.isArray(campaign.entries)) throw new Error("entries must be an array.
 if (campaign.retiredEntries !== undefined && !Array.isArray(campaign.retiredEntries)) throw new Error("retiredEntries must be an array.");
 if (!Array.isArray(dossierTemplate.dossiers) || !dossierTemplate.dossiers.length) throw new Error("The private dossier template needs a dossiers array.");
 for (const dossier of dossierTemplate.dossiers) {
-  if (!dossier.playerUuid || !dossier.characterName || !dossier.backstory?.body) throw new Error("The private dossier template is incomplete.");
+  if ((!dossier.dossierId && !dossier.playerUuid) || !dossier.characterName || !dossier.backstory?.body) throw new Error("The private dossier template is incomplete.");
 }
 
 const allowedTypes = new Set(["quest", "lore", "history"]);
