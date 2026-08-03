@@ -102,6 +102,8 @@ The bundled campaign source is [`content/campaign.json`](content/campaign.json).
 2. Codex edits and validates `content/campaign.json`, then makes a fresh module ZIP.
 3. Replace the installed module folder with the new copy. Foundry imports changed records on the next check or when the GM clicks **Sync now**.
 
+Campaign updates are additive by default. New records are appended, existing IDs are updated in place, and records remain available unless the GM explicitly asks to retire a specific ID.
+
 For a hosted Foundry server, you can avoid replacing the whole module for content-only changes:
 
 1. Put `campaign.json` at a stable HTTPS address that allows requests from your Foundry domain (CORS).

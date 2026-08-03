@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.2
+
+- Restored the four earlier quests alongside the First Steps festival and five new destination quest lines.
+- Removed the active retirement instruction so this update adds to the journal instead of replacing quest content.
+- Clarified that campaign updates are additive by default; records are removed only when their exact IDs are deliberately retired.
+
 ## 0.6.1
 
 - Replaced the four demonstration quests with the campaign's opening chapter at Feyrandralis and the Cradle of Blooming Light.
