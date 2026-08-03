@@ -1,0 +1,58 @@
+name: Validate and publish Foundry release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify version and validate source
+        shell: bash
+        run: |
+          VERSION="$(node -p "require('./module.json').version")"
+          EXPECTED_TAG="v${VERSION}"
+          if [[ "${{ github.event.release.tag_name }}" != "$EXPECTED_TAG" ]]; then
+            echo "Release tag must be $EXPECTED_TAG"
+            exit 1
+          fi
+          node --check scripts/living-campaign-journal.js
+          node tools/validate.mjs
+          node tools/smoke-foundry.mjs
+          node tools/smoke-dossiers.mjs
+
+      - name: Build Foundry module archive
+        shell: bash
+        run: |
+          VERSION="$(node -p "require('./module.json').version")"
+          mkdir -p dist
+          zip -r "dist/living-campaign-journal-v${VERSION}.zip" \
+            assets content examples scripts styles templates tools \
+            CHANGELOG.md README.md SECURITY.md module.json \
+            -x "tools/package.ps1"
+          cp module.json dist/module.json
+
+      - name: Attach Foundry files to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          VERSION="$(node -p "require('./module.json').version")"
+          gh release upload "v${VERSION}" \
+            "dist/living-campaign-journal-v${VERSION}.zip" \
+            "dist/module.json" \
+            --clobber
