@@ -1,7 +1,8 @@
 // Versioned entrypoint prevents Foundry and the browser from reusing an older module script.
 const MODULE_ID = "living-campaign-journal";
 const MODULE_TITLE = "Living Campaign Journal";
-const DEFAULT_SOURCE_PATH = `modules/${MODULE_ID}/content/campaign.json`;
+const BUNDLED_SOURCE_PATH = `modules/${MODULE_ID}/content/campaign.json`;
+const DEFAULT_SOURCE_PATH = "https://raw.githubusercontent.com/hoeytherac/living-campaign-journal/main/content/campaign.json";
 const SOCKET_CHANNEL = `module.${MODULE_ID}`;
 const WORLD_MAP_PATH = `modules/${MODULE_ID}/assets/world-map.webp`;
 const MAP_PIN_TYPES = Object.freeze({
@@ -1382,6 +1383,10 @@ Hooks.once("ready", async () => {
   game.socket.on(SOCKET_CHANNEL, handleQuestAction);
 
   if (!isPrimaryGm()) return;
+  const configuredSourcePath = game.settings.get(MODULE_ID, "sourcePath");
+  if (!configuredSourcePath || configuredSourcePath === BUNDLED_SOURCE_PATH) {
+    await game.settings.set(MODULE_ID, "sourcePath", DEFAULT_SOURCE_PATH);
+  }
   await syncLibrary({ quiet: true }).catch(() => {});
   const minutes = Number(game.settings.get(MODULE_ID, "pollMinutes"));
   if (minutes > 0) {

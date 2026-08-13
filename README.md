@@ -45,7 +45,7 @@ The interface uses a clear layered-blue foundation, luminous cornflower interact
 3. Start Foundry, open the world, and enable **Living Campaign Journal** under Manage Modules.
 4. Press **J** anywhere in Foundry to open the Campaign Journal. You can also open the Journal sidebar and select **Campaign Journal**.
 
-The first active GM automatically imports `content/campaign.json`.
+The first active GM automatically imports the public campaign source hosted from this repository. The bundled `content/campaign.json` remains inside the module as a release snapshot.
 
 ## Player quest ledger
 
@@ -106,7 +106,7 @@ The bundled campaign source is [`content/campaign.json`](content/campaign.json).
 
 Campaign updates are additive by default. New records are appended, existing IDs are updated in place, and records remain available unless the GM explicitly asks to retire a specific ID.
 
-For a hosted Foundry server, you can avoid replacing the whole module for content-only changes:
+Version 0.6.8 and later use the repository's public `campaign.json` by default, so content-only changes arrive through **Sync now** without replacing the module folder. To use a different source:
 
 1. Put `campaign.json` at a stable HTTPS address that allows requests from your Foundry domain (CORS).
 2. In Foundry's Configure Settings → Module Settings, set **Campaign JSON path** to that address.

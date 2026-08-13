@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.8
+
+- Changed the default campaign source to the public GitHub `campaign.json`, allowing Lore, quest, and History content updates to arrive through **Sync now** without replacing the module folder.
+- Automatically migrates worlds still using the old bundled campaign path while preserving any custom source URL chosen by the GM.
+- Imports the corrected 1900s campaign primer as player-facing Lore and reduces History to Session 1: The Days of the First Steps.
+- Versioned the module script and stylesheet so Foundry cannot reuse v0.6.7 browser assets.
+
 ## 0.6.7
 
 - Fixed Foundry's `config.content element must have no attributes` error by keeping the DialogV2 outer content element completely plain.
