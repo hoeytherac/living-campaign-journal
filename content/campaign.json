@@ -16,7 +16,16 @@
     "quest-cartographers-last-route",
     "quest-crown-fragment",
     "quest-promise-under-starlight",
-    "history-session-02"
+    "history-session-02",
+    "lore-blue-butterfly-cycle",
+    "lore-kaeltharion-1900s",
+    "lore-pilgrims-blue-butterfly-cycle",
+    "lore-character-creation-rules",
+    "lore-campaign-tone",
+    "lore-content-advisory",
+    "lore-opening-image",
+    "lore-ashen-crown",
+    "lore-thornwake-circle"
   ],
   "entries": [
     {
@@ -174,28 +183,6 @@
       }
     },
     {
-      "id": "lore-blue-butterfly-cycle",
-      "type": "lore",
-      "title": "The Grand Blooming: The Blue Butterfly Cycle",
-      "summary": "Kaeltharion was built from survival, grief, rebellion, and the hope that no escaped prison must become eternal.",
-      "body": "<p>There was a time before this world.</p><p>A time of cages. A time of impossible prisons. A time when souls were locked away from the lives they should have lived, and the First Watchers chose to build something new from the ruin of what came before. Kaeltharion was not born by accident. It was made. It was shaped from survival, from grief, from rebellion, and from the desperate hope that if one prison could be escaped, another did not have to become eternal.</p><p>For nearly two thousand years, the world has lived beneath that choice.</p><p>There are no gods here. No divine throne rules mankind. No pantheon listens from above. The laws of Kaeltharion are older than kings and sharper than scripture. The Vigilant Order still teaches that godhood is forbidden, that worship is dangerous, and that the world only survives because mortal hands keep rewriting the old protection spell across the land. That is what the Pilgrimage was meant to be: a sacred journey, a living stitch across the world’s skin, a path walked by the chosen so Kaeltharion does not split open and become another cage.</p><p>But this cycle is different.</p><p>You were not raised for this. You were not trained from childhood. You were not taken from an orphanage, watched by Keepers, or shaped by years of preparation. You were living your life—maybe a good one, maybe a ruined one, maybe one you were praying to escape.</p><p>Then he came to you: the Man of Many Names.</p><p>He has haunted your dreams for weeks, months, or maybe only one terrible night. You may know him as a saint, a devil, a stranger in the mirror, a voice behind a locked door, a ferryman, a father, a judge, a beggar, a lover, or a shadow wearing someone else’s face. He does not always look the same. He does not always speak the same. But every dream ends with the same feeling.</p><p>He heard you.</p><p>Whatever plea you made, spoken or silent, honest or desperate, beautiful or shameful, he granted it.</p><p>When the day breaks, you wake to a blue butterfly floating near you. It does not belong in your room. It does not belong in the winter air, the factory smoke, the candlelight, the rain, the chapel pew, the rail station, the alley, the manor hall, or the battlefield tent where you slept. It circles you once, slow and impossible, as if it has known your name for longer than you have.</p><p>The dream was not a coincidence. The path forward has been chosen.</p><p>Prepare yourself. Say your goodbyes. It will be some time before you see your loved ones again.</p>",
-      "visibility": "players",
-      "revision": 1,
-      "tags": ["Kaeltharion", "Blue Butterfly Cycle", "First Watchers", "Man of Many Names"],
-      "lore": { "category": "Campaign Primer" }
-    },
-    {
-      "id": "lore-kaeltharion-1900s",
-      "type": "lore",
-      "title": "The Era: Kaeltharion in the 1900s",
-      "summary": "An age of smoke, iron, velvet, and old magic pretending it is dead.",
-      "body": "<p>The 1900s are an age of smoke, iron, velvet, and old magic pretending it is dead.</p><p>Across Kaeltharion, the world is modernizing. Rail lines cut through sacred forests. Lantern-lit cities glow against the night. Printing presses spread scandal faster than truth. Political houses buy influence with coin, marriage, blood, and blackmail. Radios, wires, alchemical streetlamps, factory engines, and early arcane machines are changing how people travel, work, and fear one another.</p><p>The old world is not gone. It is just wearing a new coat.</p><p>Noble families still cling to ancient bloodlines. Rural villages still leave offerings at trees they claim not to worship. The Vigilant Order still patrols roads and keeps records of magic users. Keepers still argue over prophecy, law, and whether the Pilgrimage is sacred duty or state-controlled sacrifice. The wealthy speak of progress while the poor are asked to pay for it with their bodies, their time, and their children.</p><p>This is a world caught between eras: candlelight and electricity, horses and motorcars, swords and pistols, ritual circles and courtrooms, ball gowns and bloodstained aprons. Grand hotels, holy ruins, smoke-choked cities, haunted rail stations, mountain monasteries, seaside sanatoriums, and old pilgrimage roads remember every footstep ever taken across them.</p><p>The 1900s are beautiful.</p><p>The 1900s are cruel.</p><p>And something is starting to rot beneath them.</p>",
-      "visibility": "players",
-      "revision": 1,
-      "tags": ["Kaeltharion", "1900s", "industrial age", "Vigilant Order"],
-      "lore": { "category": "The World" }
-    },
-    {
       "id": "lore-historical-context",
       "type": "lore",
       "title": "Historical Context: What Came Before",
@@ -216,83 +203,6 @@
       "revision": 1,
       "tags": ["witches", "Witch Hunts", "Vigilant Order", "magic"],
       "lore": { "category": "Magic & Society" }
-    },
-    {
-      "id": "lore-pilgrims-blue-butterfly-cycle",
-      "type": "lore",
-      "title": "What Is a Pilgrim in This Campaign?",
-      "summary": "This cycle calls adults with unfinished lives, private pleas, and histories the Pilgrimage cannot erase.",
-      "body": "<p>In older cycles, pilgrims were usually selected young, trained, watched, prepared, and placed into a sacred journey with clear expectations.</p><p>This cycle has no such mercy.</p><p>You are beginning at Level 3 because your character already has a life behind them. You are not a blank slate. You have loved people. Lost people. Hurt people. Failed someone. Wanted something. Prayed for something. You have a history before the butterfly.</p><p>The Pilgrimage does not erase that history.</p><p>It drags it with you.</p><p>Your character was chosen because of a plea, a dream, a story, or a path that could not continue as it was. You may not understand why yet. You may not even believe you were chosen for a good reason. But when the blue butterfly appears, the world confirms what your dream already told you.</p><p>You have been called.</p><p>You can refuse, but the path will not forget you.</p>",
-      "visibility": "players",
-      "revision": 1,
-      "tags": ["Pilgrimage", "pilgrims", "blue butterflies", "character premise"],
-      "lore": { "category": "The Pilgrimage" }
-    },
-    {
-      "id": "lore-character-creation-rules",
-      "type": "lore",
-      "title": "Character Creation Rules",
-      "summary": "The shared creation rules for adult pilgrims entering the Blue Butterfly Cycle at Level 3.",
-      "body": "<ul><li>All player characters begin at <strong>Level 3</strong>.</li><li>Each character receives <strong>one free feat</strong> at character creation.</li><li>Each character receives <strong>5,000 gold</strong> to spend during Session 0 shops. This gold may represent savings, inheritance, stolen funds, military pay, noble allowance, black-market earnings, debt money, pilgrimage sponsorship, or a mysterious gift from the Man of Many Names. How you explain it matters.</li><li>Characters should be adults or adult-coded for their ancestry and culture. This cycle is specifically about people who already had lives before the call.</li></ul><h3>Important Connections</h3><p>Your character should have at least three important connections:</p><ul><li>Someone they love.</li><li>Someone they owe.</li><li>Someone they may never see again.</li></ul><h3>The Plea</h3><p>Your character should also have one plea. This is the thing the Man of Many Names heard. It may be noble, selfish, desperate, ugly, or private.</p><p>Examples include: <em>Let me be free. Let me save them. Let me matter. Let me forget. Let me become someone else. Let me bring them back. Let me be forgiven. Let me know the truth. Let me never be powerless again.</em></p>",
-      "visibility": "players",
-      "revision": 1,
-      "tags": ["character creation", "Level 3", "free feat", "Session 0"],
-      "lore": { "category": "Campaign Guide" }
-    },
-    {
-      "id": "lore-campaign-tone",
-      "type": "lore",
-      "title": "World Style and Campaign Tone",
-      "summary": "Dark fantasy shaped by 1900s gothic, industrial, romantic, and occult influences.",
-      "body": "<p>This campaign is dark fantasy with 1900s gothic, industrial, romantic, and occult influences.</p><h3>Expect</h3><ul><li>Pilgrimage roads, haunted towns, rail travel, old churches, factories, manor houses, city politics, sacred ruins, witch trials, dream logic, strange bargains, and social paranoia.</li><li>A world where magic exists, but access to it is uneven and often feared.</li><li>A society moving forward too quickly while dragging old sins behind it.</li><li>Characters who are chosen not because they are pure, but because their stories are unfinished.</li><li>Romance, grief, horror, found family, betrayal, moral choices, and the question of whether fate is guidance or another kind of prison.</li></ul><p>This is not a traditional heroic fantasy where the world simply needs saving by good people with swords. This is a story about people being pulled into history at the exact moment history begins sharpening its teeth.</p>",
-      "visibility": "players",
-      "revision": 1,
-      "tags": ["campaign tone", "gothic", "industrial", "occult", "dark fantasy"],
-      "lore": { "category": "Campaign Guide" }
-    },
-    {
-      "id": "lore-content-advisory",
-      "type": "lore",
-      "title": "Content Advisory",
-      "summary": "Shared expectations for the campaign’s mature and emotionally heavy themes.",
-      "body": "<p>This campaign may include mature and emotionally heavy themes.</p><h3>Potential Themes</h3><ul><li>Witch hunts, public accusations, moral panic, and persecution.</li><li>Religious trauma and institutions without true gods using faith as control.</li><li>Class inequality, poverty, exploitation, and political corruption.</li><li>Death, grief, family separation, and saying goodbye.</li><li>Dreams, hauntings, possession-adjacent imagery, and loss of control.</li><li>Body horror, magical illness, curses, and transformation.</li><li>Violence, blood, executions, imprisonment, and interrogation.</li><li>Prejudice against magic users, witches, outsiders, and the socially vulnerable.</li><li>Romance, betrayal, obsession, and complicated intimacy.</li><li>War trauma, medical trauma, and survivor’s guilt, depending on character backstories.</li></ul><p>Lines and veils will be discussed during Session 0. The goal is not to shock players or make anyone uncomfortable. The goal is to tell a dark, emotional story with trust at the table.</p><p>Players are encouraged to speak honestly about boundaries before the campaign begins.</p>",
-      "visibility": "players",
-      "revision": 1,
-      "tags": ["content advisory", "table safety", "lines and veils", "Session 0"],
-      "lore": { "category": "Campaign Guide" }
-    },
-    {
-      "id": "lore-opening-image",
-      "type": "lore",
-      "title": "The Opening Image",
-      "summary": "You wake before sunrise with the dream still on your skin, and a blue butterfly waiting near your hand.",
-      "body": "<p>You wake before sunrise.</p><p>The dream is still on your skin.</p><p>Maybe you remember the Man of Many Names clearly. Maybe you only remember his voice. Maybe all you can hold onto is the feeling of standing before a door, a river, a throne, a grave, a mirror, or a field of blue flowers beneath a sky with no stars.</p><p>Then you see it.</p><p>A blue butterfly floats above you.</p><p>Its wings glow softly in the dim room. It moves like a living thought. When it lands near your hand, you know something impossible with absolute certainty.</p><p>You have been chosen.</p><p>Not by a council. Not by the Vigilant Order. Not by chance.</p><p>By someone who heard what you begged the world to answer.</p><p>Outside, the morning begins.</p><p>Inside, your old life ends.</p><p>Prepare yourself. Say your goodbyes.</p><p>The Pilgrimage is waiting.</p>",
-      "visibility": "players",
-      "revision": 1,
-      "tags": ["opening", "blue butterfly", "Man of Many Names", "Pilgrimage"],
-      "lore": { "category": "Campaign Primer" }
-    },
-    {
-      "id": "lore-ashen-crown",
-      "type": "lore",
-      "title": "The Ashen Crown",
-      "summary": "A royal relic destroyed at the end of the Cinder War—or so the histories claim.",
-      "body": "<p>The Ashen Crown belonged to Queen Merrow, the final sovereign of the old river kingdom. Songs say she broke it upon the Ember Gate rather than let the invading host claim its authority.</p><p>Modern copies of the tale omit a troublesome detail: no witness ever described seeing the crown break.</p>",
-      "visibility": "players",
-      "revision": 1,
-      "tags": ["relic", "Cinder War", "royalty"],
-      "lore": { "category": "Relics" }
-    },
-    {
-      "id": "lore-thornwake-circle",
-      "type": "lore",
-      "title": "The Thornwake Circle",
-      "summary": "Wardens of the western old-growth who preserve promises in living bark.",
-      "body": "<p>The Thornwake Circle does not write treaties. Its members carve each promise into a rowan tree, then tend that tree for as long as the agreement stands.</p><p>Cutting down a treaty-tree is considered both a declaration of war and an admission that the promise was broken.</p>",
-      "visibility": "players",
-      "revision": 1,
-      "tags": ["faction", "western ridge", "druids"],
-      "lore": { "category": "Factions" }
     },
     {
       "id": "history-session-01",
