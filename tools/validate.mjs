@@ -70,6 +70,10 @@ for (const marker of ["data-lcj-dossier-drop", "data-lcj-dossier-file", 'accept=
 if (moduleScript.includes('textarea name="dossierJson"')) throw new Error("The retired private dossier paste box is still present.");
 if (moduleScript.includes('content.className = "lcj-dossier-import"')) throw new Error("DialogV2 content must use an attribute-free outer div.");
 if (!moduleScript.includes('<div class="lcj-dossier-import">')) throw new Error("The dossier importer needs its styled inner wrapper.");
+if (moduleScript.includes("await syncLibrary({ quiet: true })")) throw new Error("Campaign content must not synchronize automatically when the world starts.");
+if (moduleScript.includes("setInterval(() => syncLibrary")) throw new Error("Campaign content must not synchronize on a background timer.");
+const saveProgressBody = moduleScript.match(/async function saveProgress\([^)]*\) \{([\s\S]*?)\n\}/)?.[1] ?? "";
+if (saveProgressBody.includes("upsertPage")) throw new Error("Quest progress changes must not overwrite manually edited Journal pages.");
 
 const stylesheet = await readFile(path.join(root, manifest.styles[0]), "utf8");
 const openingBraces = [...stylesheet.matchAll(/{/g)].length;

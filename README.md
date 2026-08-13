@@ -34,7 +34,7 @@ The interface uses a clear layered-blue foundation, luminous cornflower interact
 - Shows player-visible and GM-only Journal Entries using normal Foundry permissions.
 - Lets a GM advance quest statuses and tick objectives from the dashboard.
 - Preserves quest progress when authored text is updated.
-- Checks the configured JSON source when the world starts and, by default, every five minutes.
+- Applies campaign source changes only when a GM deliberately clicks **Sync now**.
 - Detects changed records by content, so incrementing `revision` is useful but not required.
 - Removes only explicitly retired module-managed entries, allowing obsolete sample quests to be cleared without touching a GM's other Journals.
 
@@ -102,7 +102,7 @@ The bundled campaign source is [`content/campaign.json`](content/campaign.json).
 
 1. Tell Codex what changed. Refer to an existing record by its `id` when possible—for example: “Complete the first objective in `quest-bells-beneath-brackenford`, add what the party learned, and write Session 3 history.”
 2. Codex edits and validates `content/campaign.json`, then makes a fresh module ZIP.
-3. Replace the installed module folder with the new copy. Foundry imports changed records on the next check or when the GM clicks **Sync now**.
+3. Install a new module release when the module code changes. For ordinary campaign content changes, the GM clicks **Sync now** when they are ready to apply them.
 
 Campaign updates are additive by default. New records are appended, existing IDs are updated in place, and records remain available unless the GM explicitly asks to retire a specific ID.
 
@@ -110,9 +110,9 @@ Version 0.6.8 and later use the repository's public `campaign.json` by default, 
 
 1. Put `campaign.json` at a stable HTTPS address that allows requests from your Foundry domain (CORS).
 2. In Foundry's Configure Settings → Module Settings, set **Campaign JSON path** to that address.
-3. Publish future edits to the same address. The active GM's background check imports them.
+3. Publish future edits to the same address. They remain unapplied in Foundry until a GM deliberately clicks **Sync now**.
 
-The default interval is five minutes. Set **Check for updates every (minutes)** to `0` to disable background checks.
+Version 0.6.9 and later never synchronize campaign content during startup or on a timer. This allows the GM to edit or delete a module-managed Journal inside Foundry without the module restoring or replacing it during ordinary play.
 
 ## Authoring rules
 
@@ -155,11 +155,11 @@ const pins = game.modules.get("living-campaign-journal").api.getMapPins();
 await game.modules.get("living-campaign-journal").api.setMapPins(pins);
 ```
 
-Hold Shift while clicking **Sync now** to refresh every managed Journal Entry. A forced refresh still preserves progress unless that entry has `resetProgress: true`.
+Click **Sync now** to import new records, recreate deleted source records, apply changed source records, and process explicit retirements. Unchanged source records—and any manual page edits inside them—are preserved. Hold Shift while clicking **Sync now** to refresh every managed Journal Entry. A forced refresh still preserves quest progress unless that entry has `resetProgress: true`.
 
 ## Data safety
 
-Synchronization creates or updates entries marked as managed by this module. It deletes a managed Journal only when its exact source ID is explicitly listed in `retiredEntries`; unrelated and manually created Journals are never touched. Normal Foundry edits to quest progress are retained, but manual edits inside a managed Journal page can be replaced the next time that source record changes.
+Synchronization creates or updates entries marked as managed by this module. It deletes a managed Journal only when its exact source ID is explicitly listed in `retiredEntries`; unrelated and manually created Journals are never touched. The module does not synchronize automatically. Manual page edits and manual deletions remain in place until the GM clicks **Sync now**. Quest status, objective, vote, and participation changes update stored progress without rewriting the Journal page. A manual sync can replace a page when its source record changed, and a Shift-clicked forced sync deliberately refreshes every managed page.
 
 The source file is trusted GM-authored content. Do not point the module at an untrusted JSON feed because `body` intentionally supports HTML.
 

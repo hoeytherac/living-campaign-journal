@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.9
+
+- Changed campaign synchronization to manual-only: Foundry no longer imports the public campaign source at world startup or on a background timer.
+- Preserves Journal page edits and manually deleted managed Journals during ordinary play until the GM deliberately clicks **Sync now**.
+- Stops quest progress, voting, and participation actions from rewriting manually edited Journal page content.
+- Versioned the module script and stylesheet so Foundry cannot reuse the v0.6.8 automatic-sync code.
+
 ## 0.6.8
 
 - Changed the default campaign source to the public GitHub `campaign.json`, allowing Lore, quest, and History content updates to arrive through **Sync now** without replacing the module folder.

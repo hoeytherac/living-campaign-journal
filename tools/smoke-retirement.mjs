@@ -133,9 +133,10 @@ globalThis.JournalEntry = {
   }
 };
 
-await import("../scripts/world-map-journal-0.6.8.js");
+await import("../scripts/world-map-journal-0.6.9.js");
 await onceHooks.get("init")();
 await onceHooks.get("ready")();
+await game.modules.get("living-campaign-journal").api.sync();
 
 assert.equal(journals.some((entry) => entry.getFlag("living-campaign-journal", "sourceId") === "quest-old-demonstration"), false);
 assert.equal(journals.some((entry) => entry.getFlag("living-campaign-journal", "sourceId") === "quest-new-opening"), true);

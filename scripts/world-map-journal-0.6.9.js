@@ -15,7 +15,6 @@ const MAP_PIN_TYPES = Object.freeze({
 });
 
 let journalApp;
-let syncTimer;
 
 function info(message) {
   ui.notifications?.info(`${MODULE_TITLE}: ${message}`);
@@ -723,9 +722,8 @@ async function syncLibrary({ force = false, quiet = false } = {}) {
   }
 }
 
-async function saveProgress(entry, source, progress) {
+async function saveProgress(entry, _source, progress) {
   await entry.update({ [`flags.${MODULE_ID}.progress`]: progress });
-  await upsertPage(entry, source, progress);
 }
 
 async function handleQuestAction({ action, entryId, userId }) {
@@ -1341,14 +1339,14 @@ Hooks.once("init", () => {
     default: "Campaign Journal"
   });
   game.settings.register(MODULE_ID, "pollMinutes", {
-    name: "Check for updates every (minutes)",
-    hint: "Set to 0 to disable background checks. The active GM performs the checks.",
+    name: "Legacy automatic synchronization interval",
+    hint: "Automatic synchronization is disabled. Use Sync now when you want Foundry to apply campaign source changes.",
     scope: "world",
-    config: true,
+    config: false,
     restricted: true,
     type: Number,
     range: { min: 0, max: 1440, step: 1 },
-    default: 5
+    default: 0
   });
   game.settings.register(MODULE_ID, "campaignMeta", {
     scope: "world",
@@ -1386,12 +1384,6 @@ Hooks.once("ready", async () => {
   const configuredSourcePath = game.settings.get(MODULE_ID, "sourcePath");
   if (!configuredSourcePath || configuredSourcePath === BUNDLED_SOURCE_PATH) {
     await game.settings.set(MODULE_ID, "sourcePath", DEFAULT_SOURCE_PATH);
-  }
-  await syncLibrary({ quiet: true }).catch(() => {});
-  const minutes = Number(game.settings.get(MODULE_ID, "pollMinutes"));
-  if (minutes > 0) {
-    clearInterval(syncTimer);
-    syncTimer = setInterval(() => syncLibrary({ quiet: true }).catch(() => {}), minutes * 60_000);
   }
 });
 
