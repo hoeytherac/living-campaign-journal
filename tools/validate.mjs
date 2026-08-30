@@ -34,6 +34,10 @@ for (const entry of campaign.entries) {
   if (!entry.title) throw new Error(`Missing title on ${entry.id}.`);
   if (entry.visibility && !["players", "gm"].includes(entry.visibility)) throw new Error(`Invalid visibility on ${entry.id}.`);
   if (entry.quest?.scope && !["party", "personal"].includes(entry.quest.scope)) throw new Error(`Invalid quest scope on ${entry.id}.`);
+  if (entry.type === "history") {
+    if (/\sstyle=/i.test(entry.body ?? "")) throw new Error(`History entry ${entry.id} contains inline styles that break Foundry's rich-text editor.`);
+    if (/<\/?(?:div|header|section|article|footer)\b/i.test(entry.body ?? "")) throw new Error(`History entry ${entry.id} contains layout markup that Foundry's rich-text editor cannot safely round-trip.`);
+  }
   ids.add(entry.id);
 
   const objectiveIds = new Set();
