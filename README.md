@@ -1,6 +1,6 @@
 # Living Campaign Journal
 
-Living Campaign Journal is a system-agnostic Foundry VTT module for a shared quest ledger, interactive world map, lore library, and campaign history. Its source of truth is one readable JSON file, so campaign updates can be authored with Codex and synchronized into Foundry without recreating Journal Entries by hand.
+Living Campaign Journal is a system-agnostic Foundry VTT module for a shared quest ledger, interactive world map, artwork album, lore library, and campaign history. Its source of truth is one readable JSON file, so campaign updates can be authored with Codex and synchronized into Foundry without recreating Journal Entries by hand. World-owned features such as the artwork album and map markers remain separate from that sync source.
 
 The current interface is styled for **The Grand Blooming**, a Belle Époque-inspired chapter of **The Blue Butterfly Cycle**, using clear layered blues, restrained antique gold, floral Art Nouveau details, and readable card-based layouts.
 
@@ -27,6 +27,7 @@ The interface uses a clear layered-blue foundation, luminous cornflower interact
 - Presents the complete world map in an interactive pan-and-zoom viewer.
 - Lets the GM place shared map markers for places, quests, lore, dangers, people, and mysteries.
 - Lets a marker display player-facing information and optionally open a linked campaign Journal Entry.
+- Provides a shared artwork album with Foundry-hosted uploads, captions, session labels, tags, ordering controls, and full-size viewing.
 - Gives each player one vote for the regular quest they want the party to pursue next.
 - Highlights newly posted quests separately from older available choices.
 - Supports personal quests with an owner and a public join/leave roster so every ally can participate.
@@ -71,6 +72,19 @@ Map markers are stored as Foundry world data and automatically synchronize to co
 4. Optionally link the marker to an imported quest, lore, or history Journal Entry.
 
 Existing markers can be edited, moved to a new position, or deleted from their information card. Marker descriptions are player-facing; do not put unrevealed GM secrets in them.
+
+## Campaign artwork album
+
+The **Artwork** tab is a shared player-facing gallery. Only GMs can manage it:
+
+1. Select **Add artwork**.
+2. Drop an image into the uploader or click to browse. PNG, JPG, WEBP, GIF, and AVIF files up to 25 MB are accepted.
+3. Add a title and, when useful, a caption, session or chapter label, and comma-separated tags.
+4. Select a thumbnail to open Foundry's full-size image viewer.
+
+Artwork can be reordered, edited, or replaced from its card. Removing a piece takes it out of the album but deliberately leaves the uploaded image in Foundry's data storage so an accidental removal does not destroy the file. Album images and captions are visible to all players; keep secret GM artwork elsewhere.
+
+The image files are stored under the world's `living-campaign-journal/artwork` data folder. Album metadata and ordering are stored as Foundry world settings and update for connected players independently of **Sync now**.
 
 ## Private player dossiers
 
@@ -153,13 +167,15 @@ game.modules.get("living-campaign-journal").api.open();
 await game.modules.get("living-campaign-journal").api.sync();
 const pins = game.modules.get("living-campaign-journal").api.getMapPins();
 await game.modules.get("living-campaign-journal").api.setMapPins(pins);
+const artwork = game.modules.get("living-campaign-journal").api.getArtwork();
+await game.modules.get("living-campaign-journal").api.setArtwork(artwork);
 ```
 
 Click **Sync now** to import new records, recreate deleted source records, apply changed source records, and process explicit retirements. Unchanged source records—and any manual page edits inside them—are preserved. Hold Shift while clicking **Sync now** to refresh every managed Journal Entry. A forced refresh still preserves quest progress unless that entry has `resetProgress: true`.
 
 ## Data safety
 
-Synchronization creates or updates entries marked as managed by this module. It deletes a managed Journal only when its exact source ID is explicitly listed in `retiredEntries`; unrelated and manually created Journals are never touched. The module does not synchronize automatically. Manual page edits and manual deletions remain in place until the GM clicks **Sync now**. Quest status, objective, vote, and participation changes update stored progress without rewriting the Journal page. A manual sync can replace a page when its source record changed, and a Shift-clicked forced sync deliberately refreshes every managed page.
+Synchronization creates or updates entries marked as managed by this module. It deletes a managed Journal only when its exact source ID is explicitly listed in `retiredEntries`; unrelated and manually created Journals are never touched. The module does not synchronize automatically. Manual page edits and manual deletions remain in place until the GM clicks **Sync now**. Quest status, objective, vote, and participation changes update stored progress without rewriting the Journal page. A manual sync can replace a page when its source record changed, and a Shift-clicked forced sync deliberately refreshes every managed page. Artwork album metadata and image files are not altered by campaign synchronization.
 
 The source file is trusted GM-authored content. Do not point the module at an untrusted JSON feed because `body` intentionally supports HTML.
 

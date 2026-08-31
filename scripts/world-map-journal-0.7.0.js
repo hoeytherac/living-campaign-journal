@@ -5,6 +5,8 @@ const BUNDLED_SOURCE_PATH = `modules/${MODULE_ID}/content/campaign.json`;
 const DEFAULT_SOURCE_PATH = "https://raw.githubusercontent.com/hoeytherac/living-campaign-journal/main/content/campaign.json";
 const SOCKET_CHANNEL = `module.${MODULE_ID}`;
 const WORLD_MAP_PATH = `modules/${MODULE_ID}/assets/world-map.webp`;
+const MAX_ARTWORK_BYTES = 25 * 1024 * 1024;
+const ARTWORK_FILE_PATTERN = /\.(?:avif|gif|jpe?g|png|webp)$/i;
 const MAP_PIN_TYPES = Object.freeze({
   location: { label: "Place", iconClass: "fa-solid fa-location-dot", color: "#54b8ff" },
   quest: { label: "Quest", iconClass: "fa-solid fa-scroll", color: "#f1dca0" },
@@ -153,6 +155,232 @@ async function saveMapPins(pins) {
   const normalized = pins.map(normalizeMapPin).filter(Boolean);
   await game.settings.set(MODULE_ID, "mapPins", { schemaVersion: 1, pins: normalized });
   return normalized;
+}
+
+function normalizeArtworkEntry(entry) {
+  if (!entry || typeof entry !== "object") return null;
+  const id = String(entry.id ?? "").trim();
+  const path = String(entry.path ?? "").trim();
+  const title = String(entry.title ?? "").trim();
+  if (!id || !path || !title) return null;
+  const tags = Array.isArray(entry.tags)
+    ? entry.tags.map((tag) => String(tag).trim()).filter(Boolean)
+    : String(entry.tags ?? "").split(",").map((tag) => tag.trim()).filter(Boolean);
+  return {
+    id,
+    path,
+    title,
+    caption: String(entry.caption ?? "").trim(),
+    session: String(entry.session ?? "").trim(),
+    tags: [...new Set(tags)],
+    createdAt: String(entry.createdAt ?? new Date().toISOString()),
+    createdBy: String(entry.createdBy ?? "").trim()
+  };
+}
+
+function currentArtwork() {
+  const stored = game.settings.get(MODULE_ID, "artworkGallery") ?? {};
+  const entries = Array.isArray(stored) ? stored : stored.entries;
+  return (Array.isArray(entries) ? entries : []).map(normalizeArtworkEntry).filter(Boolean);
+}
+
+function artworkView(entry, index, entries) {
+  return {
+    ...entry,
+    hasCaption: Boolean(entry.caption),
+    hasSession: Boolean(entry.session),
+    hasTags: entry.tags.length > 0,
+    canMoveEarlier: index > 0,
+    canMoveLater: index < entries.length - 1
+  };
+}
+
+function newArtworkId() {
+  return foundry.utils?.randomID?.() ?? globalThis.crypto?.randomUUID?.() ?? `art-${Date.now().toString(36)}`;
+}
+
+async function saveArtwork(entries) {
+  if (!game.user.isGM) throw new Error("Only a GM can change the artwork album.");
+  const normalized = entries.map(normalizeArtworkEntry).filter(Boolean);
+  await game.settings.set(MODULE_ID, "artworkGallery", { schemaVersion: 1, entries: normalized });
+  return normalized;
+}
+
+function isArtworkFile(file) {
+  return Boolean(file && ARTWORK_FILE_PATTERN.test(file.name ?? "") && (!file.type || file.type.startsWith("image/")));
+}
+
+function artworkFileError(file) {
+  if (!file) return "Choose an image before adding it to the album.";
+  if (!isArtworkFile(file)) return "Use a PNG, JPG, WEBP, GIF, or AVIF image.";
+  if (file.size > MAX_ARTWORK_BYTES) return "Artwork files must be 25 MB or smaller.";
+  return "";
+}
+
+function artworkFilePicker() {
+  return foundry.applications?.apps?.FilePicker ?? globalThis.FilePicker;
+}
+
+async function ensureArtworkDirectory() {
+  const FilePickerClass = artworkFilePicker();
+  if (!FilePickerClass?.browse || !FilePickerClass?.createDirectory) {
+    throw new Error("Foundry's file uploader is not available.");
+  }
+  const worldDirectory = `worlds/${game.world.id}`;
+  const directories = [`${worldDirectory}/living-campaign-journal`, `${worldDirectory}/living-campaign-journal/artwork`];
+  for (const directory of directories) {
+    try {
+      await FilePickerClass.browse("data", directory);
+    } catch (browseException) {
+      try {
+        await FilePickerClass.createDirectory("data", directory, { notify: false });
+      } catch (createException) {
+        if (!/already exists|eexist/i.test(createException.message ?? "")) throw createException;
+      }
+    }
+  }
+  return directories.at(-1);
+}
+
+function artworkUploadName(file, title) {
+  const extension = file.name.match(/\.([a-z0-9]+)$/i)?.[1]?.toLowerCase() ?? "webp";
+  const stem = String(title || "campaign-art")
+    .normalize("NFKD")
+    .replace(/[^a-z0-9]+/gi, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase()
+    .slice(0, 48) || "campaign-art";
+  return `${stem}-${Date.now().toString(36)}.${extension}`;
+}
+
+async function uploadArtworkFile(file, title) {
+  const fileError = artworkFileError(file);
+  if (fileError) throw new Error(fileError);
+  const FilePickerClass = artworkFilePicker();
+  if (!FilePickerClass?.upload) throw new Error("Foundry's file uploader is not available.");
+  const directory = await ensureArtworkDirectory();
+  const uploadFile = new File([file], artworkUploadName(file, title), { type: file.type, lastModified: file.lastModified });
+  const response = await FilePickerClass.upload("data", directory, uploadFile, {}, { notify: true });
+  const path = String(response?.path ?? "").trim();
+  if (!path) throw new Error("Foundry uploaded the image but did not return its storage path.");
+  return path;
+}
+
+async function openArtworkEditor(artwork = null) {
+  const { DialogV2 } = foundry.applications.api;
+  let selectedFile = null;
+  let previewUrl = artwork?.path ?? "";
+  const content = document.createElement("div");
+  content.innerHTML = `<div class="lcj-artwork-editor">
+    <label class="lcj-artwork-drop${artwork ? " has-file" : ""}" data-lcj-artwork-drop tabindex="0">
+      <input type="file" name="artworkFile" accept=".avif,.gif,.jpg,.jpeg,.png,.webp,image/avif,image/gif,image/jpeg,image/png,image/webp" data-lcj-artwork-file>
+      <img src="${escapeHtml(previewUrl)}" alt="Artwork preview" data-lcj-artwork-preview${previewUrl ? "" : " hidden"}>
+      <span class="lcj-artwork-drop-icon" data-lcj-artwork-drop-icon><i class="fa-solid fa-images"></i></span>
+      <strong>${artwork ? "Drop a replacement image here" : "Drop campaign artwork here"}</strong>
+      <span>or click to choose an image</span>
+      <small data-lcj-artwork-filename aria-live="polite">${artwork ? "Keep the current image, or choose a replacement" : "PNG, JPG, WEBP, GIF, or AVIF — up to 25 MB"}</small>
+    </label>
+    <div class="lcj-artwork-fields">
+      <label><span>Title</span><input type="text" name="artworkTitle" value="${escapeHtml(artwork?.title ?? "")}" placeholder="A memorable name for this piece" required autofocus></label>
+      <label><span>Caption</span><textarea name="artworkCaption" rows="4" placeholder="What the party should know about this image">${escapeHtml(artwork?.caption ?? "")}</textarea></label>
+      <label><span>Session or chapter</span><input type="text" name="artworkSession" value="${escapeHtml(artwork?.session ?? "")}" placeholder="For example: Session 3 or The Days of First Steps"></label>
+      <label><span>Tags</span><input type="text" name="artworkTags" value="${escapeHtml((artwork?.tags ?? []).join(", "))}" placeholder="NPC, location, relic — separated by commas"></label>
+      <p><i class="fa-solid fa-eye"></i> Everything in this album is visible to players.</p>
+    </div>
+  </div>`;
+  const result = await DialogV2.input({
+    window: { title: artwork ? `Edit artwork: ${artwork.title}` : "Add Artwork to the Campaign Album" },
+    content,
+    ok: {
+      label: artwork ? "Save changes" : "Add to album",
+      icon: artwork ? "fa-solid fa-floppy-disk" : "fa-solid fa-cloud-arrow-up",
+      callback: (_event, button) => ({
+        file: selectedFile ?? button.form.elements.artworkFile.files?.[0] ?? null,
+        title: button.form.elements.artworkTitle.value.trim(),
+        caption: button.form.elements.artworkCaption.value.trim(),
+        session: button.form.elements.artworkSession.value.trim(),
+        tags: button.form.elements.artworkTags.value.split(",").map((tag) => tag.trim()).filter(Boolean)
+      })
+    },
+    render: (_event, dialog) => {
+      const root = dialog.element;
+      const dropZone = root.querySelector("[data-lcj-artwork-drop]");
+      const fileInput = root.querySelector("[data-lcj-artwork-file]");
+      const fileName = root.querySelector("[data-lcj-artwork-filename]");
+      const preview = root.querySelector("[data-lcj-artwork-preview]");
+      const dropIcon = root.querySelector("[data-lcj-artwork-drop-icon]");
+      const titleInput = dialog.form?.elements.artworkTitle;
+      const saveButton = dialog.form?.querySelector('button[data-action="ok"]') ?? root.querySelector('button[data-action="ok"]');
+
+      const refreshValidity = () => {
+        const fileMessage = selectedFile ? artworkFileError(selectedFile) : artwork ? "" : "Choose an image before adding it to the album.";
+        const valid = Boolean(titleInput?.value.trim()) && !fileMessage;
+        dropZone.classList.toggle("has-error", Boolean(selectedFile) && Boolean(fileMessage));
+        if (saveButton) saveButton.disabled = !valid;
+        if (selectedFile) fileName.textContent = fileMessage || selectedFile.name;
+      };
+      const showFile = (file) => {
+        selectedFile = file ?? null;
+        const fileMessage = artworkFileError(selectedFile);
+        dropZone.classList.toggle("has-file", (Boolean(selectedFile) && !fileMessage) || (Boolean(artwork) && !selectedFile));
+        if (selectedFile && !fileMessage) {
+          if (previewUrl.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
+          previewUrl = URL.createObjectURL(selectedFile);
+          preview.src = previewUrl;
+          preview.hidden = false;
+          dropIcon.hidden = true;
+          if (!titleInput.value.trim()) titleInput.value = selectedFile.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ");
+        }
+        refreshValidity();
+      };
+
+      fileInput.addEventListener("change", () => showFile(fileInput.files?.[0]));
+      titleInput?.addEventListener("input", refreshValidity);
+      dropZone.addEventListener("keydown", (event) => {
+        if (!["Enter", " "].includes(event.key)) return;
+        event.preventDefault();
+        fileInput.click();
+      });
+      for (const eventName of ["dragenter", "dragover"]) {
+        dropZone.addEventListener(eventName, (event) => {
+          event.preventDefault();
+          dropZone.classList.add("is-dragging");
+        });
+      }
+      dropZone.addEventListener("dragleave", (event) => {
+        if (!dropZone.contains(event.relatedTarget)) dropZone.classList.remove("is-dragging");
+      });
+      dropZone.addEventListener("drop", (event) => {
+        event.preventDefault();
+        dropZone.classList.remove("is-dragging");
+        showFile(event.dataTransfer?.files?.[0]);
+      });
+      if (previewUrl) dropIcon.hidden = true;
+      refreshValidity();
+    },
+    modal: true,
+    rejectClose: false
+  });
+  if (!result) return null;
+  if (!result.title) throw new Error("Artwork needs a title.");
+  const path = result.file ? await uploadArtworkFile(result.file, result.title) : artwork?.path;
+  return normalizeArtworkEntry({
+    id: artwork?.id ?? newArtworkId(),
+    path,
+    title: result.title,
+    caption: result.caption,
+    session: result.session,
+    tags: result.tags,
+    createdAt: artwork?.createdAt ?? new Date().toISOString(),
+    createdBy: artwork?.createdBy ?? game.user.id
+  });
+}
+
+function openArtworkPreview(artwork) {
+  const ImagePopout = foundry.applications?.apps?.ImagePopout ?? globalThis.ImagePopout;
+  if (!ImagePopout) throw new Error("Foundry's image viewer is not available.");
+  const popout = new ImagePopout({ src: artwork.path, window: { title: artwork.title } });
+  popout.render(true);
 }
 
 function hashSource(value) {
@@ -911,6 +1139,12 @@ class LivingCampaignJournalApp extends HandlebarsApplicationMixin(ApplicationV2)
       mapZoomIn: this._onMapZoomIn,
       mapZoomOut: this._onMapZoomOut,
       mapReset: this._onMapReset,
+      addArtwork: this._onAddArtwork,
+      openArtwork: this._onOpenArtwork,
+      editArtwork: this._onEditArtwork,
+      moveArtworkEarlier: this._onMoveArtworkEarlier,
+      moveArtworkLater: this._onMoveArtworkLater,
+      removeArtwork: this._onRemoveArtwork,
       changeTab: this._onChangeTab
     }
   };
@@ -924,6 +1158,7 @@ class LivingCampaignJournalApp extends HandlebarsApplicationMixin(ApplicationV2)
   mapPlacement = null;
   selectedMapPinId = null;
   mapPinsById = new Map();
+  artworkById = new Map();
 
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
@@ -960,9 +1195,13 @@ class LivingCampaignJournalApp extends HandlebarsApplicationMixin(ApplicationV2)
       .sort((left, right) => left.characterName.localeCompare(right.characterName));
     const mapPins = currentMapPins().map(mapPinView);
     this.mapPinsById = new Map(mapPins.map((pin) => [pin.id, pin]));
+    const artworkEntries = currentArtwork();
+    const artwork = artworkEntries.map(artworkView);
+    this.artworkById = new Map(artwork.map((entry) => [entry.id, entry]));
     const tabs = [
       { id: "quests", label: "Quest Ledger", icon: "fa-solid fa-scroll", count: quests.length },
       { id: "map", label: "World Map", icon: "fa-solid fa-map-location-dot", count: mapPins.length },
+      { id: "artwork", label: "Artwork", icon: "fa-solid fa-images", count: artwork.length },
       { id: "lore", label: "Lore", icon: "fa-solid fa-book-open", count: lore.length },
       { id: "history", label: "History", icon: "fa-solid fa-timeline", count: history.length }
     ];
@@ -990,12 +1229,15 @@ class LivingCampaignJournalApp extends HandlebarsApplicationMixin(ApplicationV2)
       mapImagePath: WORLD_MAP_PATH,
       mapPins,
       hasMapPins: mapPins.length > 0,
+      artwork,
+      hasArtwork: artwork.length > 0,
       lore,
       history,
       privateDossiers,
       hasPrivateDossiers: privateDossiers.length > 0,
       questsActive: this.activeTab === "quests",
       mapActive: this.activeTab === "map",
+      artworkActive: this.activeTab === "artwork",
       loreActive: this.activeTab === "lore",
       historyActive: this.activeTab === "history",
       storyActive: this.activeTab === "story",
@@ -1277,6 +1519,90 @@ class LivingCampaignJournalApp extends HandlebarsApplicationMixin(ApplicationV2)
     this._applyMapTransform();
   }
 
+  static async _onAddArtwork() {
+    if (!game.user.isGM) return;
+    try {
+      const artwork = await openArtworkEditor();
+      if (!artwork) return;
+      await saveArtwork([...currentArtwork(), artwork]);
+      this.activeTab = "artwork";
+      await this.render();
+      info(`Added “${artwork.title}” to the artwork album.`);
+    } catch (exception) {
+      error(exception.message);
+    }
+  }
+
+  static _onOpenArtwork(_event, target) {
+    const artwork = this.artworkById.get(target.dataset.artworkId);
+    if (!artwork) return;
+    try {
+      openArtworkPreview(artwork);
+    } catch (exception) {
+      error(exception.message);
+    }
+  }
+
+  static async _onEditArtwork(_event, target) {
+    if (!game.user.isGM) return;
+    const artwork = this.artworkById.get(target.dataset.artworkId);
+    if (!artwork) return;
+    try {
+      const updated = await openArtworkEditor(artwork);
+      if (!updated) return;
+      await saveArtwork(currentArtwork().map((entry) => entry.id === artwork.id ? updated : entry));
+      await this.render();
+      info(`Updated “${updated.title}”.`);
+    } catch (exception) {
+      error(exception.message);
+    }
+  }
+
+  async _moveArtwork(artworkId, offset) {
+    if (!game.user.isGM) return;
+    const entries = currentArtwork();
+    const index = entries.findIndex((entry) => entry.id === artworkId);
+    const targetIndex = index + offset;
+    if (index < 0 || targetIndex < 0 || targetIndex >= entries.length) return;
+    [entries[index], entries[targetIndex]] = [entries[targetIndex], entries[index]];
+    try {
+      await saveArtwork(entries);
+      await this.render();
+    } catch (exception) {
+      error(exception.message);
+    }
+  }
+
+  static async _onMoveArtworkEarlier(_event, target) {
+    await this._moveArtwork(target.dataset.artworkId, -1);
+  }
+
+  static async _onMoveArtworkLater(_event, target) {
+    await this._moveArtwork(target.dataset.artworkId, 1);
+  }
+
+  static async _onRemoveArtwork(_event, target) {
+    if (!game.user.isGM) return;
+    const artwork = this.artworkById.get(target.dataset.artworkId);
+    if (!artwork) return;
+    const { DialogV2 } = foundry.applications.api;
+    const confirmed = await DialogV2.confirm({
+      window: { title: `Remove artwork: ${artwork.title}` },
+      content: `<p>Remove <strong>${escapeHtml(artwork.title)}</strong> from the campaign album?</p><p>The uploaded image file will remain in Foundry's data storage, so it can still be recovered or used elsewhere.</p>`,
+      yes: { label: "Remove from album", icon: "fa-solid fa-images" },
+      no: { label: "Keep artwork" },
+      modal: true
+    });
+    if (!confirmed) return;
+    try {
+      await saveArtwork(currentArtwork().filter((entry) => entry.id !== artwork.id));
+      await this.render();
+      info(`Removed “${artwork.title}” from the artwork album.`);
+    } catch (exception) {
+      error(exception.message);
+    }
+  }
+
   static _onChangeTab(_event, target) {
     this.activeTab = target.dataset.tab;
     for (const tab of this.element.querySelectorAll("[data-lcj-tab]")) {
@@ -1367,6 +1693,13 @@ Hooks.once("init", () => {
     type: Object,
     default: { schemaVersion: 1, pins: [] }
   });
+  game.settings.register(MODULE_ID, "artworkGallery", {
+    scope: "world",
+    config: false,
+    restricted: true,
+    type: Object,
+    default: { schemaVersion: 1, entries: [] }
+  });
 });
 
 Hooks.once("ready", async () => {
@@ -1375,7 +1708,9 @@ Hooks.once("ready", async () => {
     sync: syncLibrary,
     importDossiers: importPrivateDossiers,
     getMapPins: () => foundry.utils.deepClone(currentMapPins()),
-    setMapPins: saveMapPins
+    setMapPins: saveMapPins,
+    getArtwork: () => foundry.utils.deepClone(currentArtwork()),
+    setArtwork: saveArtwork
   };
   game.modules.get(MODULE_ID).api = api;
   game.socket.on(SOCKET_CHANNEL, handleQuestAction);
@@ -1395,5 +1730,6 @@ Hooks.on("deleteJournalEntry", (entry) => {
   if (flag(entry, "managed") && journalApp?.rendered) journalApp.render();
 });
 Hooks.on("updateSetting", (setting) => {
-  if (setting.key === `${MODULE_ID}.mapPins` && journalApp?.rendered) journalApp.render();
+  const liveSettings = new Set([`${MODULE_ID}.mapPins`, `${MODULE_ID}.artworkGallery`]);
+  if (liveSettings.has(setting.key) && journalApp?.rendered) journalApp.render();
 });

@@ -59,6 +59,9 @@ const template = await readFile(path.join(root, "templates/dashboard.hbs"), "utf
 for (const marker of ["data-lcj-panel=\"map\"", "data-lcj-map-viewport", "data-lcj-map-pin", "data-action=\"addMapPin\""]) {
   if (!template.includes(marker)) throw new Error(`The interactive map template is missing ${marker}.`);
 }
+for (const marker of ["data-lcj-panel=\"artwork\"", "data-action=\"addArtwork\"", "data-action=\"openArtwork\"", "data-action=\"editArtwork\"", "data-action=\"removeArtwork\""]) {
+  if (!template.includes(marker)) throw new Error(`The artwork album template is missing ${marker}.`);
+}
 const blocks = [];
 const blockPattern = /{{([#/])\s*(if|unless|each)\b[^}]*}}/g;
 for (const match of template.matchAll(blockPattern)) {
@@ -76,6 +79,9 @@ if (moduleScript.includes('content.className = "lcj-dossier-import"')) throw new
 if (!moduleScript.includes('<div class="lcj-dossier-import">')) throw new Error("The dossier importer needs its styled inner wrapper.");
 if (moduleScript.includes("await syncLibrary({ quiet: true })")) throw new Error("Campaign content must not synchronize automatically when the world starts.");
 if (moduleScript.includes("setInterval(() => syncLibrary")) throw new Error("Campaign content must not synchronize on a background timer.");
+for (const marker of ["artworkGallery", "openArtworkEditor", "FilePickerClass.upload(\"data\"", "ImagePopout", "saveArtwork"]) {
+  if (!moduleScript.includes(marker)) throw new Error(`The artwork album script is missing ${marker}.`);
+}
 const saveProgressBody = moduleScript.match(/async function saveProgress\([^)]*\) \{([\s\S]*?)\n\}/)?.[1] ?? "";
 if (saveProgressBody.includes("upsertPage")) throw new Error("Quest progress changes must not overwrite manually edited Journal pages.");
 
@@ -89,5 +95,8 @@ for (const match of stylesheet.matchAll(/url\(["']?(\.\.[^)"']+)["']?\)/g)) {
 for (const selector of [".lcj-dossier-drop", ".lcj-dossier-drop.is-dragging", ".lcj-dossier-drop.has-file"]) {
   if (!stylesheet.includes(selector)) throw new Error(`The private dossier drop-zone stylesheet is missing ${selector}.`);
 }
+for (const selector of [".lcj-artwork-grid", ".lcj-artwork-card", ".lcj-artwork-drop", ".lcj-artwork-fields"]) {
+  if (!stylesheet.includes(selector)) throw new Error(`The artwork album stylesheet is missing ${selector}.`);
+}
 
-console.log(`Validated module manifest, private dossier template, UI template, stylesheet assets, and ${campaign.entries.length} campaign entries.`);
+console.log(`Validated module manifest, artwork album, private dossier template, UI template, stylesheet assets, and ${campaign.entries.length} campaign entries.`);

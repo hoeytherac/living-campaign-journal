@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0
+
+- Added a shared **Artwork** tab with a responsive campaign album and full-size image viewing.
+- Lets GMs upload artwork directly to Foundry, then add player-facing titles, captions, session or chapter labels, and searchable tags.
+- Added album reordering, metadata and image replacement, and safe removal that preserves the original uploaded file.
+- Stores album metadata as world data so every connected player sees the same gallery without involving campaign JSON synchronization.
+- Versioned the module script and stylesheet so Foundry cannot reuse the v0.6.9 interface after updating.
+
 ## 0.6.9
 
 - Changed campaign synchronization to manual-only: Foundry no longer imports the public campaign source at world startup or on a background timer.

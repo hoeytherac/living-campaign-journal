@@ -231,6 +231,51 @@
       </div>
     </section>
 
+    <section class="lcj-panel lcj-artwork-panel" data-lcj-panel="artwork" {{#unless artworkActive}}hidden{{/unless}}>
+      <div class="lcj-section-heading lcj-artwork-heading">
+        <div>
+          <span class="lcj-eyebrow">Portraits, places, relics & remembered moments</span>
+          <h2>Campaign Art Album</h2>
+        </div>
+        {{#if canManage}}
+          <button type="button" class="lcj-artwork-add" data-action="addArtwork"><i class="fa-solid fa-cloud-arrow-up"></i> Add artwork</button>
+        {{/if}}
+      </div>
+      <p class="lcj-artwork-intro">A shared gallery of the people, places, and moments that have shaped the campaign. Select any image to open it full-size.</p>
+      {{#if hasArtwork}}
+        <div class="lcj-artwork-grid">
+          {{#each artwork}}
+            <article class="lcj-artwork-card" data-lcj-card>
+              <button type="button" class="lcj-artwork-image" data-action="openArtwork" data-artwork-id="{{id}}" aria-label="Open {{title}} full-size">
+                <img src="{{path}}" alt="{{title}}" loading="lazy">
+                <span><i class="fa-solid fa-expand"></i> View full-size</span>
+              </button>
+              <div class="lcj-artwork-copy">
+                {{#if hasSession}}<span class="lcj-artwork-session"><i class="fa-solid fa-bookmark"></i> {{session}}</span>{{/if}}
+                <button type="button" class="lcj-artwork-title" data-action="openArtwork" data-artwork-id="{{id}}">{{title}}</button>
+                {{#if hasCaption}}<p>{{caption}}</p>{{/if}}
+                {{#if hasTags}}<div class="lcj-tags">{{#each tags}}<span>{{this}}</span>{{/each}}</div>{{/if}}
+                {{#if ../canManage}}
+                  <div class="lcj-artwork-actions" aria-label="Manage {{title}}">
+                    {{#if canMoveEarlier}}<button type="button" data-action="moveArtworkEarlier" data-artwork-id="{{id}}" title="Move earlier in album"><i class="fa-solid fa-arrow-left"></i></button>{{/if}}
+                    {{#if canMoveLater}}<button type="button" data-action="moveArtworkLater" data-artwork-id="{{id}}" title="Move later in album"><i class="fa-solid fa-arrow-right"></i></button>{{/if}}
+                    <button type="button" data-action="editArtwork" data-artwork-id="{{id}}" title="Edit title, caption, or image"><i class="fa-solid fa-pen"></i> Edit</button>
+                    <button type="button" class="lcj-artwork-remove" data-action="removeArtwork" data-artwork-id="{{id}}" title="Remove from album"><i class="fa-solid fa-trash"></i></button>
+                  </div>
+                {{/if}}
+              </div>
+            </article>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="lcj-empty lcj-artwork-empty">
+          <i class="fa-regular fa-images"></i>
+          <p>No artwork has been added to the campaign album yet.</p>
+          {{#if canManage}}<button type="button" class="lcj-artwork-add" data-action="addArtwork"><i class="fa-solid fa-cloud-arrow-up"></i> Add the first piece</button>{{/if}}
+        </div>
+      {{/if}}
+    </section>
+
     <section class="lcj-panel" data-lcj-panel="lore" {{#unless loreActive}}hidden{{/unless}}>
       <div class="lcj-section-heading">
         <div>
