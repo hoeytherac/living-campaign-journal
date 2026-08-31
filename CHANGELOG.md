@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.1
+
+- Fixed the artwork uploader dialog overflowing Foundry's narrow default window and cutting off its metadata fields.
+- Fixed the **Add to album** button remaining disabled after a valid image and title were entered.
+- Added submission-time validation so artwork uploads cannot silently fail when required information is missing.
+- Versioned the module script and stylesheet so Foundry cannot reuse the v0.7.0 uploader after updating.
+
 ## 0.7.0
 
 - Added a shared **Artwork** tab with a responsive campaign album and full-size image viewing.

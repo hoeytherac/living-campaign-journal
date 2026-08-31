@@ -960,9 +960,10 @@
 
 .lcj-artwork-editor {
   display: grid;
-  grid-template-columns: minmax(15rem, 0.9fr) minmax(17rem, 1.1fr);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: 1rem;
-  min-width: min(46rem, 78vw);
+  width: 100%;
+  min-width: 0;
   padding: 0.25rem;
 }
 
@@ -1015,7 +1016,7 @@
 .lcj-artwork-drop > span:not(.lcj-artwork-drop-icon) { color: #9bb8cf; font-size: 0.75rem; }
 .lcj-artwork-drop small { margin-top: 0.4rem; padding: 0.35rem 0.6rem; border-radius: 999px; color: #c6eaff; background: rgba(1, 12, 25, 0.72); font-size: 0.68rem; }
 
-.lcj-artwork-fields { display: grid; align-content: start; gap: 0.7rem; }
+.lcj-artwork-fields { display: grid; min-width: 0; align-content: start; gap: 0.7rem; }
 .lcj-artwork-fields label { display: grid; gap: 0.28rem; }
 .lcj-artwork-fields label > span { color: #516878; font-size: 0.73rem; font-weight: 750; }
 .lcj-artwork-fields input,
@@ -1278,5 +1279,5 @@
   .lcj-joined-summary { padding: 0.6rem 0 0; border-top: 1px solid rgba(48, 157, 255, 0.2); border-left: 0; }
   .lcj-map-workspace { grid-template-columns: 1fr; }
   .lcj-map-sidebar { max-height: none; }
-  .lcj-artwork-editor { grid-template-columns: 1fr; min-width: min(31rem, 78vw); }
+  .lcj-artwork-editor { grid-template-columns: 1fr; min-width: 0; }
 }

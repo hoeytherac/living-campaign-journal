@@ -62,7 +62,7 @@ globalThis.game = {
   }
 };
 
-await import("../scripts/world-map-journal-0.7.0.js");
+await import("../scripts/world-map-journal-0.7.1.js");
 await onceHooks.get("init")();
 await onceHooks.get("ready")();
 

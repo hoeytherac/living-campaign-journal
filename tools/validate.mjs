@@ -82,6 +82,10 @@ if (moduleScript.includes("setInterval(() => syncLibrary")) throw new Error("Cam
 for (const marker of ["artworkGallery", "openArtworkEditor", "FilePickerClass.upload(\"data\"", "ImagePopout", "saveArtwork"]) {
   if (!moduleScript.includes(marker)) throw new Error(`The artwork album script is missing ${marker}.`);
 }
+for (const marker of ["position: { width: 780 }", "root.querySelector('[name=\"artworkTitle\"]')", "saveButton.setAttribute(\"aria-disabled\""]) {
+  if (!moduleScript.includes(marker)) throw new Error(`The responsive artwork uploader fix is missing ${marker}.`);
+}
+if (moduleScript.includes("dialog.form?.elements.artworkTitle")) throw new Error("The artwork uploader must not use the unreliable named form-property lookup.");
 const saveProgressBody = moduleScript.match(/async function saveProgress\([^)]*\) \{([\s\S]*?)\n\}/)?.[1] ?? "";
 if (saveProgressBody.includes("upsertPage")) throw new Error("Quest progress changes must not overwrite manually edited Journal pages.");
 
@@ -98,5 +102,7 @@ for (const selector of [".lcj-dossier-drop", ".lcj-dossier-drop.is-dragging", ".
 for (const selector of [".lcj-artwork-grid", ".lcj-artwork-card", ".lcj-artwork-drop", ".lcj-artwork-fields"]) {
   if (!stylesheet.includes(selector)) throw new Error(`The artwork album stylesheet is missing ${selector}.`);
 }
+if (!stylesheet.includes("grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr)")) throw new Error("The artwork uploader needs overflow-safe grid columns.");
+if (!stylesheet.includes(".lcj-artwork-editor { grid-template-columns: 1fr; min-width: 0; }")) throw new Error("The artwork uploader needs a responsive single-column fallback.");
 
 console.log(`Validated module manifest, artwork album, private dossier template, UI template, stylesheet assets, and ${campaign.entries.length} campaign entries.`);

@@ -290,17 +290,26 @@ async function openArtworkEditor(artwork = null) {
   </div>`;
   const result = await DialogV2.input({
     window: { title: artwork ? `Edit artwork: ${artwork.title}` : "Add Artwork to the Campaign Album" },
+    position: { width: 780 },
     content,
     ok: {
       label: artwork ? "Save changes" : "Add to album",
       icon: artwork ? "fa-solid fa-floppy-disk" : "fa-solid fa-cloud-arrow-up",
-      callback: (_event, button) => ({
-        file: selectedFile ?? button.form.elements.artworkFile.files?.[0] ?? null,
-        title: button.form.elements.artworkTitle.value.trim(),
-        caption: button.form.elements.artworkCaption.value.trim(),
-        session: button.form.elements.artworkSession.value.trim(),
-        tags: button.form.elements.artworkTags.value.split(",").map((tag) => tag.trim()).filter(Boolean)
-      })
+      callback: (_event, button) => {
+        const field = (name) => button.form?.querySelector(`[name="${name}"]`);
+        const file = selectedFile ?? field("artworkFile")?.files?.[0] ?? null;
+        const title = field("artworkTitle")?.value.trim() ?? "";
+        const fileMessage = file ? artworkFileError(file) : artwork ? "" : "Choose an image before adding it to the album.";
+        if (!title) throw new Error("Artwork needs a title.");
+        if (fileMessage) throw new Error(fileMessage);
+        return {
+          file,
+          title,
+          caption: field("artworkCaption")?.value.trim() ?? "",
+          session: field("artworkSession")?.value.trim() ?? "",
+          tags: (field("artworkTags")?.value ?? "").split(",").map((tag) => tag.trim()).filter(Boolean)
+        };
+      }
     },
     render: (_event, dialog) => {
       const root = dialog.element;
@@ -309,14 +318,17 @@ async function openArtworkEditor(artwork = null) {
       const fileName = root.querySelector("[data-lcj-artwork-filename]");
       const preview = root.querySelector("[data-lcj-artwork-preview]");
       const dropIcon = root.querySelector("[data-lcj-artwork-drop-icon]");
-      const titleInput = dialog.form?.elements.artworkTitle;
-      const saveButton = dialog.form?.querySelector('button[data-action="ok"]') ?? root.querySelector('button[data-action="ok"]');
+      const titleInput = root.querySelector('[name="artworkTitle"]');
+      const saveButton = root.querySelector('button[data-action="ok"]') ?? dialog.form?.querySelector('button[data-action="ok"]');
 
       const refreshValidity = () => {
         const fileMessage = selectedFile ? artworkFileError(selectedFile) : artwork ? "" : "Choose an image before adding it to the album.";
-        const valid = Boolean(titleInput?.value.trim()) && !fileMessage;
+        const valid = Boolean(titleInput.value.trim()) && !fileMessage;
         dropZone.classList.toggle("has-error", Boolean(selectedFile) && Boolean(fileMessage));
-        if (saveButton) saveButton.disabled = !valid;
+        if (saveButton) {
+          saveButton.disabled = !valid;
+          saveButton.setAttribute("aria-disabled", String(!valid));
+        }
         if (selectedFile) fileName.textContent = fileMessage || selectedFile.name;
       };
       const showFile = (file) => {
@@ -335,7 +347,7 @@ async function openArtworkEditor(artwork = null) {
       };
 
       fileInput.addEventListener("change", () => showFile(fileInput.files?.[0]));
-      titleInput?.addEventListener("input", refreshValidity);
+      titleInput.addEventListener("input", refreshValidity);
       dropZone.addEventListener("keydown", (event) => {
         if (!["Enter", " "].includes(event.key)) return;
         event.preventDefault();
